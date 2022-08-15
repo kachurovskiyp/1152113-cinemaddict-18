@@ -4,7 +4,7 @@ const createContentDetailsConteinerTemplate = () => `
 <section class="film-details"></section>
 `;
 
-export default class NewContentDetailsConteinerView {
+export default class ContentDetailsConteinerView {
   getTemplate() {
     return createContentDetailsConteinerTemplate();
   }

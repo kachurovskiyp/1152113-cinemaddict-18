@@ -66,7 +66,7 @@ const createContentDetailsTemplate = () => `
   </div>
 `;
 
-export default class NewContentDetailsView {
+export default class ContentDetailsView {
   getTemplate() {
     return createContentDetailsTemplate();
   }

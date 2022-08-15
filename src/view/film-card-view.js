@@ -22,7 +22,7 @@ const createNewFilmCardTemplate = () => `
   </article>
 `;
 
-export default class NewFilmCardView {
+export default class FilmCardView {
   getTemplate() {
     return createNewFilmCardTemplate();
   }

@@ -4,7 +4,7 @@ const createContentListWrapperTemplate = () => `
   <div class="films-list__container"></div>
 `;
 
-export default class NewContentListWrapperView {
+export default class ContentListWrapperView {
   getTemplate() {
     return createContentListWrapperTemplate();
   }

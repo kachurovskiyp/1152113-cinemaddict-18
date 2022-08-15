@@ -86,7 +86,7 @@ const createContentCommentsTemplate = () => `
 </div>
 `;
 
-export default class NewContentCommentsInnerView {
+export default class ContentCommentsInnerView {
   getTemplate() {
     return createContentCommentsTemplate();
   }
