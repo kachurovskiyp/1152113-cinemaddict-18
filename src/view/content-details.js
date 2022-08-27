@@ -1,9 +1,8 @@
 import { createElement } from '../render';
 import { humanizeFilmReleaseDate } from '../util';
-import { getFilmIndex } from '../util';
 
 const createContentDetailsTemplate = (films, id) => {
-  const index = getFilmIndex(films, id);
+  const index = films.findIndex((film) => film.id === id * 1);
 
   return `
   <div class="film-details__top-container">

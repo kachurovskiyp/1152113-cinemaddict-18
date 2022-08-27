@@ -1,7 +1,7 @@
-import { getUniqueInteger } from '../util';
+import { getID } from '../util';
 
 export const generateFilm = () => ({
-  'id': getUniqueInteger(1, 30),
+  'id': getID(),
   'film_info': {
     'title': 'A Little Pony Without The Carpet',
     'alternative_title': 'Laziness Who Sold Themselves',
