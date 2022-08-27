@@ -9,7 +9,7 @@ const createNewMenuTemplate = () => `
   </nav>
   `;
 
-export default class NewMenuView {
+export default class MenuView {
   getTemplate() {
     return createNewMenuTemplate();
   }

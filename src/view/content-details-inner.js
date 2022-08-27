@@ -4,7 +4,7 @@ const createContentDetailsInnerTemplate = () => `
 <div class="film-details__inner"></div>
 `;
 
-export default class NewContentDetailsInnerView {
+export default class ContentDetailsInnerView {
   getTemplate() {
     return createContentDetailsInnerTemplate();
   }

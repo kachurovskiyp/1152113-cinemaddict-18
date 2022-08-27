@@ -1,18 +1,25 @@
 import { createElement } from '../render';
+import { humanizeFilmReleaseDate } from '../util';
+import { formatDurationTime } from '../util';
 
-const createNewFilmCardTemplate = () => `
-  <article class="film-card">
+const getFilmGeners = (genre) => genre.join(', ');
+
+const getCommmentsCount = (comments, film) =>
+  comments.filter((comment) => comment[0].id === film.id).length;
+
+const createNewFilmCardTemplate = (film, comments) => `
+  <article class="film-card" id="${film.id}">
     <a class="film-card__link">
-      <h3 class="film-card__title">Popeye the Sailor Meets Sindbad the Sailor</h3>
-      <p class="film-card__rating">6.3</p>
+      <h3 class="film-card__title">${film.film_info.title}</h3>
+      <p class="film-card__rating">${film.film_info.total_rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">1936</span>
-        <span class="film-card__duration">16m</span>
-        <span class="film-card__genre">Cartoon</span>
+        <span class="film-card__year">${humanizeFilmReleaseDate(film.film_info.release.date)}</span>
+        <span class="film-card__duration">${formatDurationTime(film.film_info.runtime)}</span>
+        <span class="film-card__genre">${getFilmGeners(film.film_info.genre)}</span>
       </p>
-      <img src="./images/posters/popeye-meets-sinbad.png" alt="" class="film-card__poster">
-      <p class="film-card__description">In this short, Sindbad the Sailor (presumably Bluto playing a "role") proclaims himself, in song, to be the greatest sailor, adventurer and…</p>
-      <span class="film-card__comments">0 comments</span>
+      <img src="./${film.film_info.poster}" alt="" class="film-card__poster">
+      <p class="film-card__description">${film.film_info.description}</p>
+      <span class="film-card__comments">${getCommmentsCount(comments, film)} comments</span>
     </a>
     <div class="film-card__controls">
       <button class="film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active" type="button">Add to watchlist</button>
@@ -22,9 +29,14 @@ const createNewFilmCardTemplate = () => `
   </article>
 `;
 
-export default class NewFilmCardView {
+export default class FilmCardView {
+  constructor(film, comments) {
+    this.film = film;
+    this.comments = comments;
+  }
+
   getTemplate() {
-    return createNewFilmCardTemplate();
+    return createNewFilmCardTemplate(this.film, this.comments);
   }
 
   getElement() {

@@ -1,24 +1,33 @@
-import NewContentContainerView from '../view/content-container-view';
-import NewContentListContainerView from '../view/content-list-view';
-import NewContentListWrapperView from '../view/content-list-wrapper-view';
-import NewFilmCardView from '../view/film-card-view';
-import NewShowMoreButtonView from '../view/show-more-button-view';
-import NewContentDetailsConteinerView from '../view/content-getails-view';
-import NewContentDetailsInnerView from '../view/content-details-inner';
-import NewContentDetailsView from '../view/content-details';
-import NewContentCommentsInnerView from '../view/content-comments-view';
+import ContentContainerView from '../view/content-container-view';
+import ContentListContainerView from '../view/content-list-view';
+import ContentListWrapperView from '../view/content-list-wrapper-view';
+import FilmCardView from '../view/film-card-view';
+import ShowMoreButtonView from '../view/show-more-button-view';
+import ContentDetailsConteinerView from '../view/content-details-view';
+import ContentDetailsInnerView from '../view/content-details-inner';
+import ContentDetailsView from '../view/content-details';
+import ContentCommentsInnerView from '../view/content-comments-view';
 import { render, RenderPosition } from '../render';
 
+//const FILM_CARDS_COUNT = 5;
+
+//const filmCardViews = [...Array(FILM_CARDS_COUNT)].map(() => new FilmCardView());
+
 export default class ContentPresenter {
-  contentContainer = new NewContentContainerView();
-  contentListContainer = new NewContentListContainerView();
-  contentWrapper = new NewContentListWrapperView();
+  contentContainer = new ContentContainerView();
+  contentListContainer = new ContentListContainerView();
+  contentWrapper = new ContentListWrapperView();
 
-  contentDetailsContainer = new NewContentDetailsConteinerView();
-  contentDetailsInner = new NewContentDetailsInnerView();
+  contentDetailsContainer = new ContentDetailsConteinerView();
+  contentDetailsInner = new ContentDetailsInnerView();
 
-  init (contentPlace) {
+  init (contentPlace, filmsModel, commentsModel) {
     this.contentPlace = contentPlace;
+    this.filmsModel = filmsModel;
+    this.content = [...this.filmsModel.getFilms()];
+
+    this.commentModel = commentsModel;
+    this.comments = [...this.commentModel.getComments()];
 
     // Film carsd render
 
@@ -26,17 +35,26 @@ export default class ContentPresenter {
     render(this.contentListContainer, this.contentContainer.getElement());
     render(this.contentWrapper, this.contentListContainer.getElement());
 
-    for(let i = 0; i < 5; i++) {
-      render(new NewFilmCardView(), this.contentWrapper.getElement());
-    }
+    const filmCardViews = [];
 
-    render(new NewShowMoreButtonView(), this.contentListContainer.getElement());
+    this.content.map((film) => {
+      filmCardViews.push(new FilmCardView(film, this.comments.slice()));
+    });
 
-    // Popup render
+    filmCardViews.forEach((card) => {
+      render(card, this.contentWrapper.getElement());
+    });
 
-    render(this.contentDetailsContainer, this.contentPlace, RenderPosition.AFTEREND);
-    render(this.contentDetailsInner, this.contentDetailsContainer.getElement());
-    render(new NewContentDetailsView(), this.contentDetailsInner.getElement());
-    render(new NewContentCommentsInnerView(), this.contentDetailsInner.getElement());
+    this.contentWrapper.getElement().addEventListener('click', (evt) => {
+
+      // Popup render
+
+      render(this.contentDetailsContainer, this.contentPlace, RenderPosition.AFTEREND);
+      render(this.contentDetailsInner, this.contentDetailsContainer.getElement());
+      render(new ContentDetailsView(this.content, evt.target.parentNode.parentNode.id), this.contentDetailsInner.getElement());
+      render(new ContentCommentsInnerView(this.comments), this.contentDetailsInner.getElement());
+    });
+
+    render(new ShowMoreButtonView(), this.contentListContainer.getElement());
   }
 }
