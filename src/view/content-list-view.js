@@ -7,18 +7,20 @@ const createNewContentListConterinerTemplate = () => `
 `;
 
 export default class ContentListContainerView {
-  getTemplate() {
+  #element = null;
+
+  get template() {
     return createNewContentListConterinerTemplate();
   }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
