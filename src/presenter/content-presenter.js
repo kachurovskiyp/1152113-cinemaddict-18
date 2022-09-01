@@ -9,10 +9,6 @@ import ContentDetailsView from '../view/content-details';
 import ContentCommentsInnerView from '../view/content-comments-view';
 import { render, RenderPosition } from '../render';
 
-//const FILM_CARDS_COUNT = 5;
-
-//const filmCardViews = [...Array(FILM_CARDS_COUNT)].map(() => new FilmCardView());
-
 export default class ContentPresenter {
   contentContainer = new ContentContainerView();
   contentListContainer = new ContentListContainerView();
@@ -24,16 +20,16 @@ export default class ContentPresenter {
   init (contentPlace, filmsModel, commentsModel) {
     this.contentPlace = contentPlace;
     this.filmsModel = filmsModel;
-    this.content = [...this.filmsModel.getFilms()];
+    this.content = [...this.filmsModel.films];
 
     this.commentModel = commentsModel;
-    this.comments = [...this.commentModel.getComments()];
+    this.comments = [...this.commentModel.comments];
 
     // Film carsd render
 
     render(this.contentContainer, this.contentPlace);
-    render(this.contentListContainer, this.contentContainer.getElement());
-    render(this.contentWrapper, this.contentListContainer.getElement());
+    render(this.contentListContainer, this.contentContainer.element);
+    render(this.contentWrapper, this.contentListContainer.element);
 
     const filmCardViews = [];
 
@@ -42,19 +38,40 @@ export default class ContentPresenter {
     });
 
     filmCardViews.forEach((card) => {
-      render(card, this.contentWrapper.getElement());
+      render(card, this.contentWrapper.element);
     });
 
-    this.contentWrapper.getElement().addEventListener('click', (evt) => {
+    this.contentWrapper.element.addEventListener('click', (evt) => {
 
       // Popup render
 
       render(this.contentDetailsContainer, this.contentPlace, RenderPosition.AFTEREND);
-      render(this.contentDetailsInner, this.contentDetailsContainer.getElement());
-      render(new ContentDetailsView(this.content, evt.target.parentNode.parentNode.id), this.contentDetailsInner.getElement());
-      render(new ContentCommentsInnerView(this.comments), this.contentDetailsInner.getElement());
-    });
+      render(this.contentDetailsInner, this.contentDetailsContainer.element);
+      render(new ContentDetailsView(this.content, evt.target.parentNode.parentNode.id), this.contentDetailsInner.element);
+      render(new ContentCommentsInnerView(this.comments), this.contentDetailsInner.element);
 
-    render(new ShowMoreButtonView(), this.contentListContainer.getElement());
+      const closeButton = document.querySelector('.film-details__close-btn');
+
+      const onCloseButtonClick = () => {
+        closePopup();
+      };
+
+      const onEscButtonPress = (event) => {
+        if (event.key === 'Escape' || event.key === 'Esc') {
+          event.preventDefault();
+          closePopup();
+        }
+      };
+
+      function closePopup () {
+        document.querySelector('.film-details').remove();
+        closeButton.removeEventListener('click', onCloseButtonClick);
+        document.removeEventListener('keydown', onEscButtonPress);
+      }
+
+      closeButton.addEventListener('click', onCloseButtonClick);
+      document.addEventListener('keydown', onEscButtonPress);
+    });
+    render(new ShowMoreButtonView(), this.contentListContainer.element);
   }
 }
