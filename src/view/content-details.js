@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeFilmReleaseDate } from '../util';
 
 const createContentDetailsTemplate = (films, id) => {
@@ -69,26 +69,14 @@ const createContentDetailsTemplate = (films, id) => {
   `;
 };
 
-export default class ContentDetailsView {
+export default class ContentDetailsView extends AbstractView {
   constructor(content, id) {
+    super();
     this.films = content;
     this.id = id;
   }
 
-  #element = null;
-
   get template() {
     return createContentDetailsTemplate(this.films, this.id);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

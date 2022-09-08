@@ -1,24 +1,21 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createContentListWrapperTemplate = () => `
   <div class="films-list__container"></div>
 `;
 
-export default class ContentListWrapperView {
-  #element = null;
-
+export default class ContentListWrapperView extends AbstractView {
   get template() {
     return createContentListWrapperTemplate();
   }
 
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click(evt);
+  };
 }
