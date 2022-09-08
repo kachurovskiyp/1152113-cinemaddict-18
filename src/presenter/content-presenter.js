@@ -44,10 +44,11 @@ export default class ContentPresenter {
   #onContentClick = (evt) => {
 
     // Popup render
+    const contentDetails = new ContentDetailsView(this.content, evt.target.parentNode.parentNode.id);
 
     render(this.contentDetailsContainer, this.contentPlace, RenderPosition.AFTEREND);
     render(this.contentDetailsInner, this.contentDetailsContainer.element);
-    render(new ContentDetailsView(this.content, evt.target.parentNode.parentNode.id), this.contentDetailsInner.element);
+    render(contentDetails, this.contentDetailsInner.element);
     render(new ContentCommentsInnerView(this.comments), this.contentDetailsInner.element);
 
     const closeButton = document.querySelector('.film-details__close-btn');
