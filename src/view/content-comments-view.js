@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const getComments = (comments) => {
   const commentsArray = [];
@@ -58,25 +58,13 @@ const createContentCommentsTemplate = (comments) => `
 </div>
 `;
 
-export default class ContentCommentsInnerView {
+export default class ContentCommentsInnerView extends AbstractView {
   constructor(comments) {
+    super();
     this.comments = comments;
   }
 
-  #element = null;
-
   get template() {
     return createContentCommentsTemplate(this.comments);
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

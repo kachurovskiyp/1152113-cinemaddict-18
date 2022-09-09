@@ -1,7 +1,7 @@
+import {render} from './framework/render.js';
 import MenuView from './view/menu-view';
 import ProfileView from './view/profile-view';
 import SortView from './view/sort-view';
-import { render } from './render';
 import ContentPresenter from './presenter/content-presenter';
 import FilmsModel from './model/films-model';
 import CommentsModel from './model/comments-model';

@@ -1,3 +1,4 @@
+import {render} from '../framework/render.js';
 import ContentContainerView from '../view/content-container-view';
 import ContentListContainerView from '../view/content-list-view';
 import ContentListWrapperView from '../view/content-list-wrapper-view';
@@ -8,8 +9,13 @@ import ContentDetailsInnerView from '../view/content-details-inner';
 import ContentDetailsView from '../view/content-details';
 import ContentCommentsInnerView from '../view/content-comments-view';
 import ListEmptyView from '../view/list-empty-view';
-import { render, RenderPosition } from '../render';
 
+const RenderPosition = {
+  BEFOREBEGIN: 'beforebegin',
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+  AFTEREND: 'afterend',
+};
 
 export default class ContentPresenter {
   FILMS_COUNT_PER_STEP = 5;
@@ -22,9 +28,7 @@ export default class ContentPresenter {
   filmCardViews = [];
 
 
-  #onMoreButtomClick = (evt) => {
-    evt.preventDefault();
-
+  #onMoreButtomClick = () => {
     this.filmCardViews
       .slice(this.FILMS_COUNT_PER_STEP, this.FILMS_COUNT_PER_STEP + this.FILMS_COUNT_PER_STEP)
       .forEach((film) => render(film, this.contentWrapper.element));
@@ -35,6 +39,39 @@ export default class ContentPresenter {
       this.showMoreButton.element.remove();
       this.showMoreButton.removeElement();
     }
+  };
+
+  #onContentClick = (evt) => {
+
+    // Popup render
+    const contentDetails = new ContentDetailsView(this.content, evt.target.parentNode.parentNode.id);
+
+    render(this.contentDetailsContainer, this.contentPlace, RenderPosition.AFTEREND);
+    render(this.contentDetailsInner, this.contentDetailsContainer.element);
+    render(contentDetails, this.contentDetailsInner.element);
+    render(new ContentCommentsInnerView(this.comments), this.contentDetailsInner.element);
+
+    const closeButton = document.querySelector('.film-details__close-btn');
+
+    const onCloseButtonClick = () => {
+      closePopup();
+    };
+
+    const onEscButtonPress = (event) => {
+      if (event.key === 'Escape' || event.key === 'Esc') {
+        event.preventDefault();
+        closePopup();
+      }
+    };
+
+    function closePopup () {
+      document.querySelector('.film-details').remove();
+      closeButton.removeEventListener('click', onCloseButtonClick);
+      document.removeEventListener('keydown', onEscButtonPress);
+    }
+
+    closeButton.addEventListener('click', onCloseButtonClick);
+    document.addEventListener('keydown', onEscButtonPress);
   };
 
   init (contentPlace, filmsModel, commentsModel) {
@@ -62,41 +99,11 @@ export default class ContentPresenter {
         render(this.filmCardViews[i], this.contentWrapper.element);
       }
 
-      this.contentWrapper.element.addEventListener('click', (evt) => {
-
-        // Popup render
-
-        render(this.contentDetailsContainer, this.contentPlace, RenderPosition.AFTEREND);
-        render(this.contentDetailsInner, this.contentDetailsContainer.element);
-        render(new ContentDetailsView(this.content, evt.target.parentNode.parentNode.id), this.contentDetailsInner.element);
-        render(new ContentCommentsInnerView(this.comments), this.contentDetailsInner.element);
-
-        const closeButton = document.querySelector('.film-details__close-btn');
-
-        const onCloseButtonClick = () => {
-          closePopup();
-        };
-
-        const onEscButtonPress = (event) => {
-          if (event.key === 'Escape' || event.key === 'Esc') {
-            event.preventDefault();
-            closePopup();
-          }
-        };
-
-        function closePopup () {
-          document.querySelector('.film-details').remove();
-          closeButton.removeEventListener('click', onCloseButtonClick);
-          document.removeEventListener('keydown', onEscButtonPress);
-        }
-
-        closeButton.addEventListener('click', onCloseButtonClick);
-        document.addEventListener('keydown', onEscButtonPress);
-      });
+      this.contentWrapper.setClickHandler(this.#onContentClick);
 
       if(this.content.length > this.FILMS_COUNT_PER_STEP) {
         render(this.showMoreButton, this.contentListContainer.element);
-        this.showMoreButton.element.addEventListener('click', this.#onMoreButtomClick);
+        this.showMoreButton.setClickHandler(this.#onMoreButtomClick);
       }
     }
   }

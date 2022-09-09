@@ -1,24 +1,11 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createContentDetailsInnerTemplate = () => `
 <div class="film-details__inner"></div>
 `;
 
-export default class ContentDetailsInnerView {
-  #element = null;
-
+export default class ContentDetailsInnerView extends AbstractView {
   get template() {
     return createContentDetailsInnerTemplate();
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
