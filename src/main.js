@@ -5,6 +5,7 @@ import SortView from './view/sort-view';
 import ContentPresenter from './presenter/content-presenter';
 import FilmsModel from './model/films-model';
 import CommentsModel from './model/comments-model';
+import { filter } from './mock/filter.js';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
@@ -12,9 +13,8 @@ const siteMainElement = document.querySelector('.main');
 const filmsModel = new FilmsModel();
 const commentsModel = new CommentsModel();
 
-
 render(new ProfileView(), siteHeaderElement);
-render(new MenuView(), siteMainElement);
+render(new MenuView(filter(filmsModel.films)), siteMainElement);
 render(new SortView(), siteMainElement);
 
 const contentPresenter = new ContentPresenter;
