@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeFilmReleaseDate } from '../util';
 import { formatDurationTime } from '../util';
+import { FILTER } from '../util';
 
 const getFilmGeners = (genre) => genre.join(', ');
 
@@ -22,9 +23,24 @@ const createNewFilmCardTemplate = (film, comments) => `
       <span class="film-card__comments">${getCommmentsCount(comments, film)} comments</span>
     </a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active" type="button">Add to watchlist</button>
-      <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-      <button class="film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active" type="button">Mark as favorite</button>
+      <button
+        class="film-card__controls-item film-card__controls-item--add-to-watchlist ${film.user_details.watchlist ? 'film-card__controls-item--active' : ''}"
+        type="button"
+        data-name="${FILTER.watchlist}">
+          Add to watchlist
+      </button>
+      <button
+        class="film-card__controls-item film-card__controls-item--mark-as-watched ${film.user_details.already_watched ? 'film-card__controls-item--active' : ''}"
+        type="button"
+        data-name="${FILTER.history}">
+          Mark as watched
+      </button>
+      <button
+        class="film-card__controls-item film-card__controls-item--favorite ${film.user_details.favorite ? 'film-card__controls-item--active' : ''}"
+        type="button"
+        data-name="${FILTER.favorite}">
+          Mark as favorite
+      </button>
     </div>
   </article>
 `;
@@ -39,4 +55,44 @@ export default class FilmCardView extends AbstractView {
   get template() {
     return createNewFilmCardTemplate(this.film, this.comments);
   }
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click(evt);
+  };
+
+  #clickWatchlistHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchlist(evt);
+  };
+
+  #clickHistoryHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickHistory(evt);
+  };
+
+  #clickFavoriteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickFavorite(evt);
+  };
+
+  setWatchlistClickHandler = (callback) => {
+    this._callback.clickWatchlist = callback;
+    this.element.querySelector(`[data-name="${FILTER.watchlist}"]`).addEventListener('click', this.#clickWatchlistHandler);
+  };
+
+  setHistoryClickHandler = (callback) => {
+    this._callback.clickHistory = callback;
+    this.element.querySelector(`[data-name="${FILTER.history}"]`).addEventListener('click', this.#clickHistoryHandler);
+  };
+
+  setFavoriteClickHandler = (callback) => {
+    this._callback.clickFavorite = callback;
+    this.element.querySelector(`[data-name="${FILTER.favorite}"]`).addEventListener('click', this.#clickFavoriteHandler);
+  };
+
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
 }
