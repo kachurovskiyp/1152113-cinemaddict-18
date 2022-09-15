@@ -10,7 +10,7 @@ export const filter = (films) => {
       filters.watchlist = filters.watchlist + 1;
     }
 
-    if (film.user_details.already_watched) {
+    if (film.user_details.alreadyWatched) {
       filters.history = filters.history + 1;
     }
 
