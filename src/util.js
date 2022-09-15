@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 const FILTER = {
   'watchlist' : 'watchlist',
-  'history' : 'already_watched',
+  'history' : 'alreadyWatched',
   'favorite' : 'favorite'
 };
 
@@ -44,7 +44,7 @@ const changeData = (items, changedID, type) => {
       break;
 
     case FILTER.history:
-      changedItem.user_details.already_watched = !changedItem.user_details.already_watched;
+      changedItem.user_details.alreadyWatched = !changedItem.user_details.alreadyWatched;
       break;
 
     case FILTER.favorite:

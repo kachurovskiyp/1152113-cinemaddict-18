@@ -28,7 +28,7 @@ export const generateFilm = () => ({
   },
   'user_details': {
     'watchlist': false,
-    'already_watched': false,
+    'alreadyWatched': false,
     'watching_date': '2019-04-12T16:12:32.554Z',
     'favorite': false
   }

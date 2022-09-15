@@ -68,7 +68,7 @@ const createContentDetailsTemplate = (film) => `
         </button>
         <button
           type="button"
-          class="film-details__control-button film-details__control-button--watched ${film.user_details.already_watched ? 'film-details__control-button--active' : ''}"
+          class="film-details__control-button film-details__control-button--watched ${film.user_details.alreadyWatched ? 'film-details__control-button--active' : ''}"
           id="watched"
           name="watched"
           data-name="${FILTER.history}">

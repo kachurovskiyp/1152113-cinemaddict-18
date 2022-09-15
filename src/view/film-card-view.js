@@ -30,7 +30,7 @@ const createNewFilmCardTemplate = (film, comments) => `
           Add to watchlist
       </button>
       <button
-        class="film-card__controls-item film-card__controls-item--mark-as-watched ${film.user_details.already_watched ? 'film-card__controls-item--active' : ''}"
+        class="film-card__controls-item film-card__controls-item--mark-as-watched ${film.user_details.alreadyWatched ? 'film-card__controls-item--active' : ''}"
         type="button"
         data-name="${FILTER.history}">
           Mark as watched
