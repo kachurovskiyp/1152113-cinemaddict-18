@@ -6,6 +6,13 @@ const FILTER = {
   'favorite' : 'favorite'
 };
 
+const FILTER_NAME = {
+  'all' : 'allMovies',
+  'wathlist' : 'watchlist',
+  'history' : 'history',
+  'favorites' : 'favorites'
+};
+
 const EVENT_NAME = {
   'button' : 'BUTTON'
 };
@@ -28,42 +35,35 @@ const humanizeFilmReleaseDate = (releaseDate) => dayjs(releaseDate).format('YYYY
 
 const formatDurationTime = (time) => `${time} m`;
 
-const changeData = (items, changedID, type) => {
-
-  const index = items.findIndex((item) => item.id === changedID * 1);
-
-  if (index === -1) {
-    return items;
-  }
-
-  const changedItem = items[index];
-
+const changeElement = (item, type) => {
   switch(type) {
     case FILTER.watchlist:
-      changedItem.user_details.watchlist = !changedItem.user_details.watchlist;
-      break;
+      item.user_details.watchlist = !item.user_details.watchlist;
+      return item;
 
     case FILTER.history:
-      changedItem.user_details.alreadyWatched = !changedItem.user_details.alreadyWatched;
-      break;
+      item.user_details.alreadyWatched = !item.user_details.alreadyWatched;
+      return item;
 
     case FILTER.favorite:
-      changedItem.user_details.favorite = !changedItem.user_details.favorite;
-      break;
+      item.user_details.favorite = !item.user_details.favorite;
+      return item;
   }
-
-  return [
-    ...items.slice(0, index),
-    changedItem,
-    ...items.slice(index + 1),
-  ];
 };
+
+const changeData = (items, changedID, type) => items.map((item) => {
+  if (item.id === changedID * 1) {
+    return changeElement(item, type);
+  }
+  return item;
+});
 
 export {getRandomInteger,
   humanizeFilmReleaseDate,
   formatDurationTime,
   getID,
   FILTER,
+  FILTER_NAME,
   EVENT_NAME,
   changeData
 };

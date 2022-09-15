@@ -1,4 +1,6 @@
-export const filter = (films) => {
+import { FILTER_NAME } from '../util';
+
+const countOfFilteredItems = (films) => {
   const filters = {
     'watchlist': 0,
     'history': 0,
@@ -22,3 +24,18 @@ export const filter = (films) => {
 
   return filters;
 };
+
+const filterItems = (films, type) => {
+  switch (type) {
+    case FILTER_NAME.all:
+      return films;
+    case FILTER_NAME.wathlist:
+      return films.filter((film) => film.user_details.watchlist);
+    case FILTER_NAME.history:
+      return films.filter((film) => film.user_details.alreadyWatched);
+    case FILTER_NAME.favorites:
+      return films.filter((film) => film.user_details.favorite);
+  }
+};
+
+export {countOfFilteredItems, filterItems};
