@@ -6,7 +6,7 @@ import ContentListContainerView from '../view/content-list-view';
 import ContentListWrapperView from '../view/content-list-wrapper-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import ListEmptyView from '../view/list-empty-view';
-import { filter } from '../mock/filter.js';
+import { countOfFilteredItems, filterItems } from '../mock/filter.js';
 
 import { changeData } from '../util.js';
 
@@ -26,18 +26,22 @@ export default class ContentPresenter {
   #showMoreButton = new ShowMoreButtonView();
 
   #renderMenu = () => {
-    this.#menuView = new MenuView(filter(this.content));
+    this.#menuView = new MenuView(countOfFilteredItems(this.content));
     render(this.#menuView, this.contentPlace);
+    this.#menuView.setClickHandler(this.#onFilterLinkClick);
   };
+
+  #onFilterLinkClick = (evt) => {
+    this.#clearFilmList();
+    this.#renderFilms(filterItems(this.content, evt.target.dataset.name));
+  };
+
 
   #resetMenu = () => {
     remove(this.#menuView);
-    this.#menuView = new MenuView(filter(this.content));
+    this.#menuView = new MenuView(countOfFilteredItems(this.content));
     render(this.#menuView, this.contentPlace, RenderPosition.BEFOREBEGIN);
-  };
-
-  #closeAllPopups = () => {
-    this.#filmPresenters.forEach((filmPresenter) => filmPresenter.closePopup());
+    this.#menuView.setClickHandler(this.#onFilterLinkClick);
   };
 
   #changeHandler = (chagedID, type) => {
@@ -51,11 +55,12 @@ export default class ContentPresenter {
     }
   };
 
-  #clearFilmList () {
+  #clearFilmList = () => {
     this.#filmPresenters.forEach((filmPresenter) => filmPresenter.destroy());
     this.#FILMS_COUNT_PER_STEP = this.#FILMS_STEP;
+    this.#filmPresenters = [];
     remove(this.#showMoreButton);
-  }
+  };
 
   #renderFilms (films) {
     films.map((film) => {
@@ -103,6 +108,10 @@ export default class ContentPresenter {
     render(this.#showMoreButton, this.#contentListContainer.element);
     this.#showMoreButton.setClickHandler(this.#onMoreButtomClick);
   }
+
+  #closeAllPopups = () => {
+    this.#filmPresenters.forEach((filmPresenter) => filmPresenter.closePopup());
+  };
 
   init (contentPlace, filmsModel, commentsModel) {
     this.contentPlace = contentPlace;
