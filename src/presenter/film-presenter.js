@@ -1,7 +1,7 @@
 import { RenderPosition } from '../framework/render.js';
-import ContentDetailsConteinerView from '../view/content-details-view';
-import ContentDetailsInnerView from '../view/content-details-inner';
-import ContentDetailsView from '../view/content-details';
+import ContentDetailsConteinerView from '../view/content-details-container-view';
+import ContentDetailsInnerView from '../view/content-details-inner-view';
+import ContentDetailsView from '../view/content-details-view';
 import ContentCommentsInnerView from '../view/content-comments-view';
 import {remove, render} from '../framework/render.js';
 import FilmCardView from '../view/film-card-view';

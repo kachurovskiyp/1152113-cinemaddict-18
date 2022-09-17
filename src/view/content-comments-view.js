@@ -1,4 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import { createEmotionElement, EMOTIONS, EVENT_NAME } from '../util';
 
 const getComments = (comments) => {
   const commentsArray = [];
@@ -36,21 +37,21 @@ const createContentCommentsTemplate = (comments) => `
         <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
       </label>
       <div class="film-details__emoji-list">
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-        <label class="film-details__emoji-label" for="emoji-smile">
-          <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="${EMOTIONS.smile.name}" value="${EMOTIONS.smile.name}">
+        <label class="film-details__emoji-label" for="${EMOTIONS.smile.name}" data-name="${EMOTIONS.smile.name}">
+          <img src="${EMOTIONS.smile.src}" width="30" height="30" alt="emoji-${EMOTIONS.smile.name}">
         </label>
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-        <label class="film-details__emoji-label" for="emoji-sleeping">
-          <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="${EMOTIONS.sleeping.name}" value="${EMOTIONS.sleeping.name}">
+        <label class="film-details__emoji-label" for="${EMOTIONS.sleeping.name}" data-name="${EMOTIONS.sleeping.name}">
+          <img src="${EMOTIONS.sleeping.src}" width="30" height="30" alt="emoji-${EMOTIONS.sleeping.name}">
         </label>
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-        <label class="film-details__emoji-label" for="emoji-puke">
-          <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="${EMOTIONS.puke.name}" value="${EMOTIONS.puke.name}">
+        <label class="film-details__emoji-label" for="${EMOTIONS.puke.name}" data-name="${EMOTIONS.puke.name}">
+          <img src="${EMOTIONS.puke.src}" width="30" height="30" alt="emoji-${EMOTIONS.puke.name}">
         </label>
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-        <label class="film-details__emoji-label" for="emoji-angry">
-          <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="${EMOTIONS.angry.name}" value="${EMOTIONS.angry.name}">
+        <label class="film-details__emoji-label" for="${EMOTIONS.angry.name}" data-name="${EMOTIONS.angry.name}">
+          <img src="${EMOTIONS.angry.src}" width="30" height="30" alt="emoji-${EMOTIONS.angry.name}">
         </label>
       </div>
     </form>
@@ -58,13 +59,51 @@ const createContentCommentsTemplate = (comments) => `
 </div>
 `;
 
-export default class ContentCommentsInnerView extends AbstractView {
+export default class ContentCommentsInnerView extends AbstractStatefulView {
   constructor(comments) {
     super();
     this.comments = comments;
+    this._setCommentsEmotionClickHandler();
   }
 
   get template() {
     return createContentCommentsTemplate(this.comments);
   }
+
+  #setEmotion = (type) => {
+    const container = this.element.querySelector('.film-details__add-emoji-label');
+
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    container.appendChild(createEmotionElement(type));
+  };
+
+  #setSelectedEmotion = (source) => {
+    this.updateElement({'selectedEmotion' : source.dataset.name});
+    this.#setEmotion(source.dataset.name);
+    this.#selectRadioButton(source.dataset.name);
+  };
+
+  #selectRadioButton = (type) => {
+    this.element.querySelector(`#${type}`).setAttribute('checked', 'checked');
+  };
+
+  #setCommentsEmotionClickHandler = (evt) => {
+    evt.preventDefault();
+    if(evt.target.tagName === EVENT_NAME.img) {
+      this.#setSelectedEmotion(evt.target.parentNode);
+    } else if ((evt.target.tagName === EVENT_NAME.label)){
+      this.#setSelectedEmotion(evt.target);
+    }
+  };
+
+  _setCommentsEmotionClickHandler() {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentsEmotionClickHandler);
+  }
+
+  _restoreHandlers = () => {
+    this._setCommentsEmotionClickHandler();
+  };
 }

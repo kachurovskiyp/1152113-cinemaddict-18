@@ -14,7 +14,32 @@ const FILTER_NAME = {
 };
 
 const EVENT_NAME = {
-  'button' : 'BUTTON'
+  'button' : 'BUTTON',
+  'img' : 'IMG',
+  'label' : 'LABEL'
+};
+
+const EMOTIONS = {
+  'smile' : {
+    'name' : 'smile',
+    'src' : './images/emoji/smile.png',
+  },
+  'sleeping' : {
+    'name' : 'sleeping',
+    'src' : './images/emoji/sleeping.png',
+  },
+  'puke' : {
+    'name' : 'puke',
+    'src' : './images/emoji/puke.png',
+  },
+  'angry' : {
+    'name' : 'angry',
+    'src' : './images/emoji/angry.png',
+  },
+
+  'width' : '55',
+  'height' : '55',
+  'alt' : 'emoji'
 };
 
 const FILM_IDS = [];
@@ -58,12 +83,43 @@ const changeData = (items, changedID, type) => items.map((item) => {
   return item;
 });
 
+const createEmotionElement = (type) => {
+  const img = document.createElement('img');
+  img.width = EMOTIONS.width;
+  img.height = EMOTIONS.height;
+  switch (type) {
+    case EMOTIONS.smile.name:
+      img.alt = `${EMOTIONS.alt}-${EMOTIONS.smile.name}`;
+      img.src = EMOTIONS.smile.src;
+      break;
+
+    case EMOTIONS.sleeping.name:
+      img.alt = `${EMOTIONS.alt}-${EMOTIONS.sleeping.name}`;
+      img.src = EMOTIONS.sleeping.src;
+      break;
+
+    case EMOTIONS.puke.name:
+      img.alt = `${EMOTIONS.alt}-${EMOTIONS.puke.name}`;
+      img.src = EMOTIONS.puke.src;
+      break;
+
+    case EMOTIONS.angry.name:
+      img.alt = `${EMOTIONS.alt}-${EMOTIONS.angry.name}`;
+      img.src = EMOTIONS.angry.src;
+      break;
+  }
+
+  return img;
+};
+
 export {getRandomInteger,
   humanizeFilmReleaseDate,
   formatDurationTime,
+  createEmotionElement,
   getID,
   FILTER,
   FILTER_NAME,
   EVENT_NAME,
+  EMOTIONS,
   changeData
 };
