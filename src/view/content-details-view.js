@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { humanizeFilmReleaseDate, FILTER } from '../util';
+import { humanizeFilmReleaseDate, formatDurationTime, FILTER } from '../util';
 
 const createContentDetailsTemplate = (film) => `
   <div class="film-details__top-container">
@@ -40,7 +40,7 @@ const createContentDetailsTemplate = (film) => `
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">${film.film_info.runtime}</td>
+            <td class="film-details__cell">${formatDurationTime(film.film_info.runtime)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
