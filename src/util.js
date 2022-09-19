@@ -1,4 +1,9 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
+
 
 const FILTER = {
   'watchlist' : 'watchlist',
@@ -56,9 +61,12 @@ const getID = () => {
   return FILM_IDS[FILM_IDS.length - 1];
 };
 
-const humanizeFilmReleaseDate = (releaseDate) => dayjs(releaseDate).format('YYYY');
+const humanizeFilmReleaseDate = (releaseDate) => dayjs(releaseDate).format('D MMM YYYY');
 
-const formatDurationTime = (time) => `${time} m`;
+const formatCommentDate = (date) => dayjs(date).fromNow(); //dayjs(date).format('YYYY/MM/DD h:mm');
+
+const formatDurationTime = (time) => `${dayjs.duration(time, 'm').format('H')}h ${dayjs.duration(time, 'm').format('mm')}m`;
+//`${time} m`;
 
 const changeElement = (item, type) => {
   switch(type) {
@@ -115,6 +123,7 @@ const createEmotionElement = (type) => {
 export {getRandomInteger,
   humanizeFilmReleaseDate,
   formatDurationTime,
+  formatCommentDate,
   createEmotionElement,
   getID,
   FILTER,

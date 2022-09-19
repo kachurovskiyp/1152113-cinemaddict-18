@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { createEmotionElement, EMOTIONS, EVENT_NAME } from '../util';
+import { formatCommentDate, createEmotionElement, EMOTIONS, EVENT_NAME } from '../util';
 
 const getComments = (comments) => {
   const commentsArray = [];
@@ -13,7 +13,7 @@ const getComments = (comments) => {
        <p class="film-details__comment-text">${element[0].comment}</p>
        <p class="film-details__comment-info">
          <span class="film-details__comment-author">${element[0].author}</span>
-         <span class="film-details__comment-day">2019/12/31 23:59</span>
+         <span class="film-details__comment-day">${formatCommentDate(element[0].date)}</span>
          <button class="film-details__comment-delete">Delete</button>
        </p>
      </div>
