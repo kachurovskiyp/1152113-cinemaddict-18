@@ -6,18 +6,18 @@ const getComments = (comments) => {
   comments.forEach((element) => {
     commentsArray.push(`
      <li class="film-details__comment">
-     <span class="film-details__comment-emoji">
-       <img src="./images/emoji/${element[0].emotion}.png" width="55" height="55" alt="emoji-smile">
-     </span>
-     <div>
-       <p class="film-details__comment-text">${element[0].comment}</p>
-       <p class="film-details__comment-info">
-         <span class="film-details__comment-author">${element[0].author}</span>
-         <span class="film-details__comment-day">${formatCommentDate(element[0].date)}</span>
-         <button class="film-details__comment-delete">Delete</button>
-       </p>
-     </div>
-   </li>
+      <span class="film-details__comment-emoji">
+        <img src="./images/emoji/${element.emotion}.png" width="55" height="55" alt="emoji-smile">
+      </span>
+      <div>
+        <p class="film-details__comment-text">${element.comment}</p>
+        <p class="film-details__comment-info">
+          <span class="film-details__comment-author">${element.author}</span>
+          <span class="film-details__comment-day">${formatCommentDate(element.date)}</span>
+          <button class="film-details__comment-delete">Delete</button>
+        </p>
+      </div>
+     </li>
      `);
   });
   return commentsArray.join(' ');

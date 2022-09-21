@@ -34,6 +34,6 @@ export default class FilmsModel extends Observable{
       }
       return item;
     });
-    this._notify();
+    this._notify(changedID);
   }
 }

@@ -1,4 +1,4 @@
-export const generateComment = () => [
+export const generateComment = () => (
   {
     'id': 1,
     'author': 'Ilya O\'Reilly',
@@ -6,4 +6,4 @@ export const generateComment = () => [
     'date': '2022-09-17T16:12:32.554Z',
     'emotion': 'smile'
   }
-];
+);

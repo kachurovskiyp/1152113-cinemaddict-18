@@ -57,7 +57,7 @@ const getRandomInteger = (a = 0, b = 1) => {
 };
 
 const getID = () => {
-  FILM_IDS.push(FILM_IDS.length + 1);
+  FILM_IDS.push(FILM_IDS.length);
   return FILM_IDS[FILM_IDS.length - 1];
 };
 

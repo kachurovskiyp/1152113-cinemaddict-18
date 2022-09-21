@@ -9,6 +9,7 @@ export default class Observable {
    * Метод, позволяющий подписаться на событие
    * @param {observerCallback} observer Функция, которая будет вызвана при наступлении события
    */
+
   addObserver(observer) {
     this.#observers.add(observer);
   }

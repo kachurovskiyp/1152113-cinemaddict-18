@@ -15,6 +15,7 @@ export default class ContentPresenter {
 
   #filmPresenters = [];
   #filmsModel = null;
+  #commentsModel = null;
 
   #filterMenu = null;
   #listEmpty = new ListEmptyView;
@@ -27,14 +28,41 @@ export default class ContentPresenter {
     return this.#filmsModel.films;
   }
 
-  #changeHandler = (chagedID, type) => {
-    this.#filmsModel.changeData(chagedID, type);
-    this.#clearFilmList();
-    this.#renderFilms();
+  #modelEventHandle = (changedID) => {
+    let newElement;
+    const popupOpen = this.#filmPresenters.find((presenter) => presenter.popupOpened);
 
-    if(this.#filmPresenters.some((filmPresenter) => filmPresenter.popupOpened)){
-      this.#filmPresenters.find((filmPresenter) => filmPresenter.id === chagedID).resetPopup();
+    if(popupOpen){
+      this.#closeAllPopups();
     }
+
+    this.#filmPresenters = this.#filmPresenters.filter((filmPresenter) => filmPresenter.id !== changedID);
+
+    this.#filmPresenters.push(
+      new FilmPresenter(
+        this.films.find((film) => film.id === changedID * 1),
+        this.#commentsModel,
+        this.#filmsModel,
+        this.#closeAllPopups,
+        this.#contentWrapper.element
+      )
+    );
+
+    this.#filmPresenters.forEach((presenter) => {
+      if(presenter.id === changedID) {
+        presenter.setHandlers();
+        newElement = presenter.viewComponent.element;
+        if(popupOpen) {
+          presenter.resetPopup();
+        }
+      }
+    });
+
+    this.#contentWrapper.element.childNodes.forEach((child) => {
+      if(child.id * 1 === changedID) {
+        this.#contentWrapper.element.replaceChild(newElement, child);
+      }
+    });
   };
 
   #clearFilmList = () => {
@@ -51,7 +79,7 @@ export default class ContentPresenter {
 
     films.map((film) => {
       this.#filmPresenters.push(
-        new FilmPresenter(film, this.comments.slice(), this.#changeHandler, this.#closeAllPopups, this.#contentWrapper.element)
+        new FilmPresenter(film, this.#commentsModel, this.#filmsModel, this.#closeAllPopups, this.#contentWrapper.element)
       );
     });
 
@@ -103,8 +131,7 @@ export default class ContentPresenter {
     this.contentPlace = contentPlace;
     this.#filmsModel = filmsModel;
 
-    this.commentModel = commentsModel;
-    this.comments = [...this.commentModel.comments];
+    this.#commentsModel = commentsModel;
 
     this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
     this.#filterMenu.init();
@@ -112,5 +139,6 @@ export default class ContentPresenter {
 
     this.#renderContentWrapper();
     this.#renderFilms();
+    this.#filmsModel.addObserver(this.#modelEventHandle);
   }
 }
