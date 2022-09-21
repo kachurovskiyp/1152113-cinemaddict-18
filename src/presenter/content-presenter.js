@@ -30,7 +30,7 @@ export default class ContentPresenter {
   #changeHandler = (chagedID, type) => {
     this.#filmsModel.changeData(chagedID, type);
     this.#clearFilmList();
-    this.#renderFilms(this.films);
+    this.#renderFilms();
 
     if(this.#filmPresenters.some((filmPresenter) => filmPresenter.popupOpened)){
       this.#filmPresenters.find((filmPresenter) => filmPresenter.id === chagedID).resetPopup();
@@ -42,9 +42,13 @@ export default class ContentPresenter {
     this.#FILMS_COUNT_PER_STEP = this.#FILMS_STEP;
     this.#filmPresenters = [];
     remove(this.#showMoreButton);
+    remove(this.#listEmpty);
   };
 
-  #renderFilms = (films) => {
+  #renderFilms = () => {
+    const films = this.#filterMenu.filterItems(this.films);
+    this.#filmPresenters = [];
+
     films.map((film) => {
       this.#filmPresenters.push(
         new FilmPresenter(film, this.comments.slice(), this.#changeHandler, this.#closeAllPopups, this.#contentWrapper.element)
@@ -102,11 +106,11 @@ export default class ContentPresenter {
     this.commentModel = commentsModel;
     this.comments = [...this.commentModel.comments];
 
-    this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#clearFilmList, this.#renderFilms);
+    this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
     this.#filterMenu.init();
     render(new SortView(), this.contentPlace);
 
     this.#renderContentWrapper();
-    this.#renderFilms(this.films);
+    this.#renderFilms();
   }
 }

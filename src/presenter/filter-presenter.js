@@ -6,25 +6,30 @@ export default class FilterPresenter{
   #menuView = null;
   #filmsModel = null;
   #contentPlace = null;
-  #clearFilmsList = null;
   #renderFilms = null;
+  #clearFilmsList = null;
   #actualFilter = FILTER_NAME.all;
 
-  constructor(filmsModel, contentPlace, clearFilmsList, renderFilms) {
+  constructor(filmsModel, contentPlace, renderFilms, clearFilmsList) {
     this.#filmsModel = filmsModel;
     this.#contentPlace = contentPlace;
-    this.#clearFilmsList = clearFilmsList;
     this.#renderFilms = renderFilms;
+    this.#clearFilmsList = clearFilmsList;
   }
 
   get films() {
     return this.#filmsModel.films;
   }
 
+  get actualFilter() {
+    return this.#actualFilter;
+  }
+
   init() {
     this.#menuView = new MenuView(this.#countOfFilteredItems(this.films));
     render(this.#menuView, this.#contentPlace);
     this.#menuView.setClickHandler(this.#onFilterLinkClick);
+
     this.#filmsModel.addObserver(this.#modelEventHandle);
   }
 
@@ -40,13 +45,15 @@ export default class FilterPresenter{
   }
 
   #onFilterLinkClick = (evt) => {
-    this.#actualFilter = evt.target.dataset.name;
-    this.#clearFilmsList();
-    this.#renderFilms(this.#filterItems(this.films, this.#actualFilter));
+    if(this.#actualFilter !== evt.target.dataset.name) {
+      this.#actualFilter = evt.target.dataset.name;
+      this.#clearFilmsList();
+      this.#renderFilms();
+    }
   };
 
-  #filterItems (films, type) {
-    switch (type) {
+  filterItems (films) {
+    switch (this.actualFilter) {
       case FILTER_NAME.all:
         return films;
       case FILTER_NAME.wathlist:
