@@ -11,9 +11,9 @@ export default class FilmPresenter {
   #id = null;
   #film = null;
   #filmView = null;
-  #changeData = null;
+  #filmsModel = null;
   #closeAllPopups = null;
-  #comments = [];
+  #commentsModel = [];
   #contentPlace = null;
   #popupOpened = false;
 
@@ -22,15 +22,55 @@ export default class FilmPresenter {
   #contentDetails = null;
   #ContentCommentsInnerView = null;
 
-  constructor(film, comments, changeData, closeAllPopups, contentPlace) {
+  constructor(film, commentsModel, filmsModel, closeAllPopups, contentPlace) {
     this.#film = film;
-    this.#changeData = changeData;
+    this.#filmsModel = filmsModel;
     this.#closeAllPopups = closeAllPopups;
     this.#id = film.id;
-    this.#comments = comments;
+    this.#commentsModel = commentsModel;
     this.#contentPlace = contentPlace;
-    this.#filmView = new FilmCardView(this.#film, this.#comments.slice());
+    this.#filmView = new FilmCardView(this.#film, this.#commentsModel);
+    this.#contentDetails = new ContentDetailsView(this.#film, this.id);
+    this.#ContentCommentsInnerView = new ContentCommentsInnerView(this.#commentsModel.comments);
   }
+
+  get id () {
+    return this.#id;
+  }
+
+  get popupOpened () {
+    return this.#popupOpened;
+  }
+
+  get viewComponent () {
+    return this.#filmView;
+  }
+
+  init (contentPlace) {
+    render(this.#filmView, contentPlace);
+    this.setHandlers();
+  }
+
+  resetPopup = () => {
+    this.#popupRender();
+  };
+
+  closePopup = () => {
+    remove(this.#contentDetails);
+    remove(this.#ContentCommentsInnerView);
+    this.#popupOpened = false;
+  };
+
+  setHandlers() {
+    this.#filmView.setWatchlistClickHandler(this.#onWatchListButtonClick);
+    this.#filmView.setHistoryClickHandler(this.#onHistoryButtonClick);
+    this.#filmView.setFavoriteClickHandler(this.#onFavoriteButtonClick);
+    this.#filmView.setClickHandler(this.#onFilmClick);
+  }
+
+  destroy = () => {
+    remove(this.#filmView);
+  };
 
   #onFilmClick = (evt) => {
     if(evt.target.tagName !== EVENT_NAME.button) {
@@ -40,8 +80,6 @@ export default class FilmPresenter {
 
   #popupRender = () => {
     this.#closeAllPopups();
-    this.#contentDetails = new ContentDetailsView(this.#film, this.#id);
-    this.#ContentCommentsInnerView = new ContentCommentsInnerView(this.#comments);
 
     render(this.#contentDetailsContainer, this.#contentPlace, RenderPosition.AFTEREND);
     render(this.#contentDetailsInner, this.#contentDetailsContainer.element);
@@ -56,46 +94,15 @@ export default class FilmPresenter {
     this.#popupOpened = true;
   };
 
-  closePopup = () => {
-    remove(this.#contentDetails);
-    remove(this.#ContentCommentsInnerView);
-    this.#popupOpened = false;
-  };
-
   #onWatchListButtonClick = () => {
-    this.#changeData(this.#id, FILTER.watchlist);
+    this.#filmsModel.changeData(this.#id, FILTER.watchlist);
   };
 
   #onHistoryButtonClick = () => {
-    this.#changeData(this.#id, FILTER.history);
+    this.#filmsModel.changeData(this.#id, FILTER.history);
   };
 
   #onFavoriteButtonClick = () => {
-    this.#changeData(this.#id, FILTER.favorite);
-  };
-
-  resetPopup = () => {
-    this.closePopup();
-    this.#popupRender();
-  };
-
-  get popupOpened () {
-    return this.#popupOpened;
-  }
-
-  get id () {
-    return this.#id;
-  }
-
-  init (contentPlace) {
-    render(this.#filmView, contentPlace);
-    this.#filmView.setWatchlistClickHandler(this.#onWatchListButtonClick);
-    this.#filmView.setHistoryClickHandler(this.#onHistoryButtonClick);
-    this.#filmView.setFavoriteClickHandler(this.#onFavoriteButtonClick);
-    this.#filmView.setClickHandler(this.#onFilmClick);
-  }
-
-  destroy = () => {
-    remove(this.#filmView);
+    this.#filmsModel.changeData(this.#id, FILTER.favorite);
   };
 }

@@ -57,7 +57,7 @@ const getRandomInteger = (a = 0, b = 1) => {
 };
 
 const getID = () => {
-  FILM_IDS.push(FILM_IDS.length + 1);
+  FILM_IDS.push(FILM_IDS.length);
   return FILM_IDS[FILM_IDS.length - 1];
 };
 
@@ -66,30 +66,6 @@ const humanizeFilmReleaseDate = (releaseDate) => dayjs(releaseDate).format('D MM
 const formatCommentDate = (date) => dayjs(date).fromNow(); //dayjs(date).format('YYYY/MM/DD h:mm');
 
 const formatDurationTime = (time) => `${dayjs.duration(time, 'm').format('H')}h ${dayjs.duration(time, 'm').format('mm')}m`;
-//`${time} m`;
-
-const changeElement = (item, type) => {
-  switch(type) {
-    case FILTER.watchlist:
-      item.user_details.watchlist = !item.user_details.watchlist;
-      return item;
-
-    case FILTER.history:
-      item.user_details.alreadyWatched = !item.user_details.alreadyWatched;
-      return item;
-
-    case FILTER.favorite:
-      item.user_details.favorite = !item.user_details.favorite;
-      return item;
-  }
-};
-
-const changeData = (items, changedID, type) => items.map((item) => {
-  if (item.id === changedID * 1) {
-    return changeElement(item, type);
-  }
-  return item;
-});
 
 const createEmotionElement = (type) => {
   const img = document.createElement('img');
@@ -129,6 +105,5 @@ export {getRandomInteger,
   FILTER,
   FILTER_NAME,
   EVENT_NAME,
-  EMOTIONS,
-  changeData
+  EMOTIONS
 };
