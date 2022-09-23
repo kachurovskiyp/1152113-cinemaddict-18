@@ -57,11 +57,11 @@ export default class FilterPresenter{
       case FILTER_NAME.all:
         return films;
       case FILTER_NAME.wathlist:
-        return films.filter((film) => film.user_details.watchlist);
+        return films.filter((film) => film.userDetails.watchlist);
       case FILTER_NAME.history:
-        return films.filter((film) => film.user_details.alreadyWatched);
+        return films.filter((film) => film.userDetails.alreadyWatched);
       case FILTER_NAME.favorites:
-        return films.filter((film) => film.user_details.favorite);
+        return films.filter((film) => film.userDetails.favorite);
     }
   }
 
@@ -73,15 +73,15 @@ export default class FilterPresenter{
     };
 
     films.forEach((film) => {
-      if (film.user_details.watchlist) {
+      if (film.userDetails.watchlist) {
         filters.watchlist = filters.watchlist + 1;
       }
 
-      if (film.user_details.alreadyWatched) {
+      if (film.userDetails.alreadyWatched) {
         filters.history = filters.history + 1;
       }
 
-      if (film.user_details.favorite) {
+      if (film.userDetails.favorite) {
         filters.favorites = filters.favorites + 1;
       }
 

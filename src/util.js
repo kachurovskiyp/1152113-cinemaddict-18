@@ -47,6 +47,11 @@ const EMOTIONS = {
   'alt' : 'emoji'
 };
 
+const UPDATE_TYPE = {
+  'PATCH' : 'patch',
+  'INIT' : 'init'
+};
+
 const FILM_IDS = [];
 
 const getRandomInteger = (a = 0, b = 1) => {
@@ -105,5 +110,6 @@ export {getRandomInteger,
   FILTER,
   FILTER_NAME,
   EVENT_NAME,
-  EMOTIONS
+  EMOTIONS,
+  UPDATE_TYPE
 };

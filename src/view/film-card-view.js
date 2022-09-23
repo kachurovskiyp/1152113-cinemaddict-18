@@ -8,32 +8,32 @@ const getFilmGeners = (genre) => genre.join(', ');
 const createNewFilmCardTemplate = (film, commentsModel) => `
   <article class="film-card" id="${film.id}">
     <a class="film-card__link">
-      <h3 class="film-card__title">${film.film_info.title}</h3>
-      <p class="film-card__rating">${film.film_info.total_rating}</p>
+      <h3 class="film-card__title">${film.filmInfo.title}</h3>
+      <p class="film-card__rating">${film.filmInfo.totalRating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${humanizeFilmReleaseDate(film.film_info.release.date)}</span>
-        <span class="film-card__duration">${formatDurationTime(film.film_info.runtime)}</span>
-        <span class="film-card__genre">${getFilmGeners(film.film_info.genre)}</span>
+        <span class="film-card__year">${humanizeFilmReleaseDate(film.filmInfo.release.date)}</span>
+        <span class="film-card__duration">${formatDurationTime(film.filmInfo.runtime)}</span>
+        <span class="film-card__genre">${getFilmGeners(film.filmInfo.genre)}</span>
       </p>
-      <img src="./${film.film_info.poster}" alt="" class="film-card__poster">
-      <p class="film-card__description">${film.film_info.description}</p>
+      <img src="./${film.filmInfo.poster}" alt="" class="film-card__poster">
+      <p class="film-card__description">${film.filmInfo.description}</p>
       <span class="film-card__comments">${commentsModel.getCommentCount(film.id)} comments</span>
     </a>
     <div class="film-card__controls">
       <button
-        class="film-card__controls-item film-card__controls-item--add-to-watchlist ${film.user_details.watchlist ? 'film-card__controls-item--active' : ''}"
+        class="film-card__controls-item film-card__controls-item--add-to-watchlist ${film.userDetails.watchlist ? 'film-card__controls-item--active' : ''}"
         type="button"
         data-name="${FILTER.watchlist}">
           Add to watchlist
       </button>
       <button
-        class="film-card__controls-item film-card__controls-item--mark-as-watched ${film.user_details.alreadyWatched ? 'film-card__controls-item--active' : ''}"
+        class="film-card__controls-item film-card__controls-item--mark-as-watched ${film.userDetails.alreadyWatched ? 'film-card__controls-item--active' : ''}"
         type="button"
         data-name="${FILTER.history}">
           Mark as watched
       </button>
       <button
-        class="film-card__controls-item film-card__controls-item--favorite ${film.user_details.favorite ? 'film-card__controls-item--active' : ''}"
+        class="film-card__controls-item film-card__controls-item--favorite ${film.userDetails.favorite ? 'film-card__controls-item--active' : ''}"
         type="button"
         data-name="${FILTER.favorite}">
           Mark as favorite
