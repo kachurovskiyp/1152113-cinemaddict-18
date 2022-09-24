@@ -66,7 +66,7 @@ export default class ContentPresenter {
 
         this.#filmPresenters.push(
           new FilmPresenter(
-            this.films.find((film) => film.id * 1 === changedID * 1),
+            this.films.find((film) => film.id === changedID),
             this.#filmsModel,
             this.#closeAllPopups,
             this.#contentWrapper.element,
@@ -85,7 +85,7 @@ export default class ContentPresenter {
         });
 
         this.#contentWrapper.element.childNodes.forEach((child) => {
-          if(child.id * 1 === changedID * 1) {
+          if(parseInt(child.id, 10) === changedID) {
             this.#contentWrapper.element.replaceChild(newElement, child);
           }
         });

@@ -25,6 +25,42 @@ export default class FilmsModel extends Observable{
     this._notify(UPDATE_TYPE.INIT);
   };
 
+  #changeElement = (item, type) => {
+    switch(type) {
+      case FILTER.watchlist:
+        item.userDetails.watchlist = !item.userDetails.watchlist;
+        return item;
+
+      case FILTER.history:
+        item.userDetails.alreadyWatched = !item.userDetails.alreadyWatched;
+        return item;
+
+      case FILTER.favorite:
+        item.userDetails.favorite = !item.userDetails.favorite;
+        return item;
+    }
+  };
+
+  changeData = async (changedID, type) => {
+
+    const update = this.#changeElement(this.#films.find((film) => film.id === changedID), type);
+
+    try {
+      const response = await this.#filmsApiService.updateFilm(this.#adaptToServer(update));
+      const updatedFilm = this.#adaptToClient(response);
+
+      this.#films = this.#films.map((item) => {
+        if (item.id === changedID) {
+          return updatedFilm;
+        }
+        return item;
+      });
+      this._notify(UPDATE_TYPE.PATCH, changedID);
+    }catch {
+      throw new Error('Can\'t update task');
+    }
+  };
+
   #adaptToClient = (film) => {
     const adaptedFilm = {...film,
       filmInfo: {...film.film_info,
@@ -50,6 +86,9 @@ export default class FilmsModel extends Observable{
     delete adaptedFilm.userDetails.already_watched;
     delete adaptedFilm.userDetails.watching_date;
     delete adaptedFilm.user_details;
+
+    adaptedFilm.id = parseInt(adaptedFilm.id, 10);
+    //console.log(adaptedFilm);
 
     return adaptedFilm;
   };
@@ -89,43 +128,7 @@ export default class FilmsModel extends Observable{
     delete adaptedFilm.user_details.alreadyWatched;
     delete adaptedFilm.user_details.watchingDate;
     delete adaptedFilm.userDetails;
-
+    adaptedFilm.id = String(adaptedFilm.id);
     return adaptedFilm;
   };
-
-  #changeElement = (item, type) => {
-    switch(type) {
-      case FILTER.watchlist:
-        item.userDetails.watchlist = !item.userDetails.watchlist;
-        return item;
-
-      case FILTER.history:
-        item.userDetails.alreadyWatched = !item.userDetails.alreadyWatched;
-        return item;
-
-      case FILTER.favorite:
-        item.userDetails.favorite = !item.userDetails.favorite;
-        return item;
-    }
-  };
-
-  changeData = async (changedID, type) => {
-    const update = this.#changeElement(this.#films.find((film) => film.id * 1 === changedID * 1), type);
-    const index = this.#films.findIndex((film) => film.id === changedID * 1);
-
-    try {
-      const response = await this.#filmsApiService.updateFilm(this.#adaptToServer(update));
-      const updatedFilm = this.#adaptToClient(response);
-
-      this.#films = [
-        ...this.#films.slice(0, index),
-        updatedFilm,
-        ...this.#films.slice(index + 1),
-      ];
-      this._notify(UPDATE_TYPE.PATCH, changedID);
-
-    }catch {
-      throw new Error('Can\'t update task');
-    }
-  }
 }
