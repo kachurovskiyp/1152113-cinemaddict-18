@@ -1,18 +1,33 @@
-import { generateComment } from '../mock/comments';
 import Observable from '../framework/observable';
-
-const COMMENTS_COUNT = 4;
 
 // const USER_EVENT = {
 //   'delete' : 'delete'
 // };
 
 export default class CommentsModel extends Observable {
-  #comments = Array.from({length: COMMENTS_COUNT}, generateComment);
+  #comments = [];
+  #id = null;
+  #apiService = null;
+
+  constructor(apiService, id) {
+    super();
+    this.#apiService = apiService;
+    this.#id = id;
+  }
 
   get comments() {
     return this.#comments;
   }
 
-  getCommentCount = (filmID) => this.#comments.filter((comment) => comment.id * 1 === filmID).length;
+  init = async () => {
+    try{
+      this.#comments = await this.#apiService.getComments(this.#id);
+      this._notify();
+
+    } catch {
+      this.#comments = [];
+      throw new Error('Can\'t load comments');
+    }
+
+  };
 }

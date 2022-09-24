@@ -5,7 +5,7 @@ import { FILTER } from '../util';
 
 const getFilmGeners = (genre) => genre.join(', ');
 
-const createNewFilmCardTemplate = (film, commentsModel) => `
+const createNewFilmCardTemplate = (film) => `
   <article class="film-card" id="${film.id}">
     <a class="film-card__link">
       <h3 class="film-card__title">${film.filmInfo.title}</h3>
@@ -17,7 +17,7 @@ const createNewFilmCardTemplate = (film, commentsModel) => `
       </p>
       <img src="./${film.filmInfo.poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${film.filmInfo.description}</p>
-      <span class="film-card__comments">${commentsModel.getCommentCount(film.id)} comments</span>
+      <span class="film-card__comments">${film.comments.length} comments</span>
     </a>
     <div class="film-card__controls">
       <button
@@ -43,14 +43,13 @@ const createNewFilmCardTemplate = (film, commentsModel) => `
 `;
 
 export default class FilmCardView extends AbstractView {
-  constructor(film, comments) {
+  constructor(film) {
     super();
     this.film = film;
-    this.commentsModel = comments;
   }
 
   get template() {
-    return createNewFilmCardTemplate(this.film, this.commentsModel);
+    return createNewFilmCardTemplate(this.film);
   }
 
   #clickHandler = (evt) => {

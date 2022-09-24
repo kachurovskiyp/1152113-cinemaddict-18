@@ -16,7 +16,7 @@ export default class ContentPresenter {
 
   #filmPresenters = [];
   #filmsModel = null;
-  #commentsModel = null;
+  #apiService = null;
 
   #filterMenu = null;
   #listEmpty = new ListEmptyView;
@@ -25,8 +25,25 @@ export default class ContentPresenter {
   #contentWrapper = new ContentListWrapperView();
   #showMoreButton = new ShowMoreButtonView();
 
+  constructor(apiService) {
+    this.#apiService = apiService;
+  }
+
   get films() {
     return this.#filmsModel.films;
+  }
+
+  init (contentPlace, filmsModel) {
+    this.contentPlace = contentPlace;
+    this.#filmsModel = filmsModel;
+
+    this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
+    this.#filterMenu.init();
+    render(new SortView(), this.contentPlace);
+
+    this.#renderContentWrapper();
+    this.#renderFilms();
+    this.#filmsModel.addObserver(this.#modelEventHandle);
   }
 
   #modelEventHandle = (updateType, changedID) => {
@@ -40,6 +57,7 @@ export default class ContentPresenter {
         break;
 
       case UPDATE_TYPE.PATCH:
+
         if(popupOpen){
           this.#closeAllPopups();
         }
@@ -49,10 +67,10 @@ export default class ContentPresenter {
         this.#filmPresenters.push(
           new FilmPresenter(
             this.films.find((film) => film.id * 1 === changedID * 1),
-            this.#commentsModel,
             this.#filmsModel,
             this.#closeAllPopups,
-            this.#contentWrapper.element
+            this.#contentWrapper.element,
+            this.#apiService
           )
         );
 
@@ -67,7 +85,7 @@ export default class ContentPresenter {
         });
 
         this.#contentWrapper.element.childNodes.forEach((child) => {
-          if(child.id * 1 === changedID) {
+          if(child.id * 1 === changedID * 1) {
             this.#contentWrapper.element.replaceChild(newElement, child);
           }
         });
@@ -89,7 +107,7 @@ export default class ContentPresenter {
 
     films.map((film) => {
       this.#filmPresenters.push(
-        new FilmPresenter(film, this.#commentsModel, this.#filmsModel, this.#closeAllPopups, this.#contentWrapper.element)
+        new FilmPresenter(film, this.#filmsModel, this.#closeAllPopups, this.#contentWrapper.element, this.#apiService)
       );
     });
 
@@ -136,19 +154,4 @@ export default class ContentPresenter {
   #closeAllPopups = () => {
     this.#filmPresenters.forEach((filmPresenter) => filmPresenter.closePopup());
   };
-
-  init (contentPlace, filmsModel, commentsModel) {
-    this.contentPlace = contentPlace;
-    this.#filmsModel = filmsModel;
-
-    this.#commentsModel = commentsModel;
-
-    this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
-    this.#filterMenu.init();
-    render(new SortView(), this.contentPlace);
-
-    this.#renderContentWrapper();
-    this.#renderFilms();
-    this.#filmsModel.addObserver(this.#modelEventHandle);
-  }
 }
