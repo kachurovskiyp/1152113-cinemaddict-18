@@ -8,59 +8,59 @@ const createContentDetailsTemplate = (film) => `
     </div>
     <div class="film-details__info-wrap">
       <div class="film-details__poster">
-        <img class="film-details__poster-img" src="./${film.film_info.poster}" alt="">
+        <img class="film-details__poster-img" src="./${film.filmInfo.poster}" alt="">
         <p class="film-details__age">18+</p>
       </div>
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
-            <h3 class="film-details__title">${film.film_info.title}</h3>
-            <p class="film-details__title-original">Original: ${film.film_info.alternative_title}</p>
+            <h3 class="film-details__title">${film.filmInfo.title}</h3>
+            <p class="film-details__title-original">Original: ${film.filmInfo.alternativeTitle}</p>
           </div>
           <div class="film-details__rating">
-            <p class="film-details__total-rating">${film.film_info.total_rating}</p>
+            <p class="film-details__total-rating">${film.filmInfo.totalRating}</p>
           </div>
         </div>
         <table class="film-details__table">
           <tr class="film-details__row">
             <td class="film-details__term">Director</td>
-            <td class="film-details__cell">${film.film_info.director}</td>
+            <td class="film-details__cell">${film.filmInfo.director}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">${film.film_info.writers.join(', ')}</td>
+            <td class="film-details__cell">${film.filmInfo.writers.join(', ')}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
-            <td class="film-details__cell">${film.film_info.actors.join(', ')}</td>
+            <td class="film-details__cell">${film.filmInfo.actors.join(', ')}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">${humanizeFilmReleaseDate(film.film_info.release.date)}</td>
+            <td class="film-details__cell">${humanizeFilmReleaseDate(film.filmInfo.release.date)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">${formatDurationTime(film.film_info.runtime)}</td>
+            <td class="film-details__cell">${formatDurationTime(film.filmInfo.runtime)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">${film.film_info.release.release_country}</td>
+            <td class="film-details__cell">${film.filmInfo.release.releaseCountry}</td>
           </tr>
           <tr class="film-details__row">
-            <td class="film-details__term">${film.film_info.genre.length > 1 ? 'Genres' : 'Genre'}</td>
+            <td class="film-details__term">${film.filmInfo.genre.length > 1 ? 'Genres' : 'Genre'}</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">${film.film_info.genre.join(', ')}</span>
+              <span class="film-details__genre">${film.filmInfo.genre.join(', ')}</span>
           </tr>
         </table>
         <p class="film-details__film-description">
-        ${film.film_info.description}
+        ${film.filmInfo.description}
         </p>
       </div>
     </div>
       <section class="film-details__controls">
         <button
           type="button"
-          class="film-details__control-button film-details__control-button--watchlist ${film.user_details.watchlist ? 'film-details__control-button--active' : ''}"
+          class="film-details__control-button film-details__control-button--watchlist ${film.userDetails.watchlist ? 'film-details__control-button--active' : ''}"
           id="watchlist"
           name="watchlist"
           data-name="${FILTER.watchlist}">
@@ -68,14 +68,14 @@ const createContentDetailsTemplate = (film) => `
         </button>
         <button
           type="button"
-          class="film-details__control-button film-details__control-button--watched ${film.user_details.alreadyWatched ? 'film-details__control-button--active' : ''}"
+          class="film-details__control-button film-details__control-button--watched ${film.userDetails.alreadyWatched ? 'film-details__control-button--active' : ''}"
           id="watched"
           name="watched"
           data-name="${FILTER.history}">
             Already watched
         </button>
         <button
-          type="button" class="film-details__control-button film-details__control-button--favorite ${film.user_details.favorite ? 'film-details__control-button--active' : ''}"
+          type="button" class="film-details__control-button film-details__control-button--favorite ${film.userDetails.favorite ? 'film-details__control-button--active' : ''}"
           id="favorite"
           name="favorite"
           data-name="${FILTER.favorite}">

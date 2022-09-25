@@ -6,6 +6,7 @@ import ContentListContainerView from '../view/content-list-view';
 import ContentListWrapperView from '../view/content-list-wrapper-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import ListEmptyView from '../view/list-empty-view';
+import { UPDATE_TYPE } from '../util.js';
 
 import FilmPresenter from './film-presenter.js';
 
@@ -15,7 +16,7 @@ export default class ContentPresenter {
 
   #filmPresenters = [];
   #filmsModel = null;
-  #commentsModel = null;
+  #apiService = null;
 
   #filterMenu = null;
   #listEmpty = new ListEmptyView;
@@ -24,45 +25,72 @@ export default class ContentPresenter {
   #contentWrapper = new ContentListWrapperView();
   #showMoreButton = new ShowMoreButtonView();
 
+  constructor(apiService) {
+    this.#apiService = apiService;
+  }
+
   get films() {
     return this.#filmsModel.films;
   }
 
-  #modelEventHandle = (changedID) => {
+  init (contentPlace, filmsModel) {
+    this.contentPlace = contentPlace;
+    this.#filmsModel = filmsModel;
+
+    this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
+    this.#filterMenu.init();
+    render(new SortView(), this.contentPlace);
+
+    this.#renderContentWrapper();
+    this.#renderFilms();
+    this.#filmsModel.addObserver(this.#modelEventHandle);
+  }
+
+  #modelEventHandle = (updateType, changedID) => {
     let newElement;
     const popupOpen = this.#filmPresenters.find((presenter) => presenter.popupOpened);
 
-    if(popupOpen){
-      this.#closeAllPopups();
-    }
+    switch(updateType){
+      case UPDATE_TYPE.INIT:
+        this.#clearFilmList();
+        this.#renderFilms();
+        break;
 
-    this.#filmPresenters = this.#filmPresenters.filter((filmPresenter) => filmPresenter.id !== changedID);
+      case UPDATE_TYPE.PATCH:
 
-    this.#filmPresenters.push(
-      new FilmPresenter(
-        this.films.find((film) => film.id === changedID * 1),
-        this.#commentsModel,
-        this.#filmsModel,
-        this.#closeAllPopups,
-        this.#contentWrapper.element
-      )
-    );
-
-    this.#filmPresenters.forEach((presenter) => {
-      if(presenter.id === changedID) {
-        presenter.setHandlers();
-        newElement = presenter.viewComponent.element;
-        if(popupOpen) {
-          presenter.resetPopup();
+        if(popupOpen){
+          this.#closeAllPopups();
         }
-      }
-    });
 
-    this.#contentWrapper.element.childNodes.forEach((child) => {
-      if(child.id * 1 === changedID) {
-        this.#contentWrapper.element.replaceChild(newElement, child);
-      }
-    });
+        this.#filmPresenters = this.#filmPresenters.filter((filmPresenter) => filmPresenter.id !== changedID);
+
+        this.#filmPresenters.push(
+          new FilmPresenter(
+            this.films.find((film) => film.id === changedID),
+            this.#filmsModel,
+            this.#closeAllPopups,
+            this.#contentWrapper.element,
+            this.#apiService
+          )
+        );
+
+        this.#filmPresenters.forEach((presenter) => {
+          if(presenter.id === changedID) {
+            presenter.setHandlers();
+            newElement = presenter.viewComponent.element;
+            if(popupOpen) {
+              presenter.resetPopup();
+            }
+          }
+        });
+
+        this.#contentWrapper.element.childNodes.forEach((child) => {
+          if(parseInt(child.id, 10) === changedID) {
+            this.#contentWrapper.element.replaceChild(newElement, child);
+          }
+        });
+        break;
+    }
   };
 
   #clearFilmList = () => {
@@ -79,7 +107,7 @@ export default class ContentPresenter {
 
     films.map((film) => {
       this.#filmPresenters.push(
-        new FilmPresenter(film, this.#commentsModel, this.#filmsModel, this.#closeAllPopups, this.#contentWrapper.element)
+        new FilmPresenter(film, this.#filmsModel, this.#closeAllPopups, this.#contentWrapper.element, this.#apiService)
       );
     });
 
@@ -126,19 +154,4 @@ export default class ContentPresenter {
   #closeAllPopups = () => {
     this.#filmPresenters.forEach((filmPresenter) => filmPresenter.closePopup());
   };
-
-  init (contentPlace, filmsModel, commentsModel) {
-    this.contentPlace = contentPlace;
-    this.#filmsModel = filmsModel;
-
-    this.#commentsModel = commentsModel;
-
-    this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
-    this.#filterMenu.init();
-    render(new SortView(), this.contentPlace);
-
-    this.#renderContentWrapper();
-    this.#renderFilms();
-    this.#filmsModel.addObserver(this.#modelEventHandle);
-  }
 }

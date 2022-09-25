@@ -23,11 +23,11 @@ const getComments = (comments) => {
   return commentsArray.join(' ');
 };
 
-const createContentCommentsTemplate = (comments) => `
+const createContentCommentsTemplate = (comments, commentsCount) => `
 
 <div class="film-details__bottom-container">
   <section class="film-details__comments-wrap">
-    <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
+    <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
     <ul class="film-details__comments-list">
     ${getComments(comments)}
     </ul>
@@ -60,14 +60,18 @@ const createContentCommentsTemplate = (comments) => `
 `;
 
 export default class ContentCommentsInnerView extends AbstractStatefulView {
-  constructor(comments) {
+  #comments = [];
+  #commentsCount = 0;
+
+  constructor(comments, commentsCount) {
     super();
-    this.comments = comments;
+    this.#comments = comments;
+    this.#commentsCount = commentsCount;
     this._setCommentsEmotionClickHandler();
   }
 
   get template() {
-    return createContentCommentsTemplate(this.comments);
+    return createContentCommentsTemplate(this.#comments, this.#commentsCount);
   }
 
   #setEmotion = (type) => {
@@ -105,5 +109,16 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this._setCommentsEmotionClickHandler();
+  };
+
+  resetComments = (comments) => {
+    //console.log(comments);
+    const commentsContainer = this.element.querySelector('.film-details__comments-list');
+
+    while(commentsContainer.firstChild) {
+      commentsContainer.removeChild(commentsContainer.firstChild);
+    }
+
+    commentsContainer.innerHTML = getComments(comments);
   };
 }
