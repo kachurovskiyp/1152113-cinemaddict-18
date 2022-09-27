@@ -14,7 +14,7 @@ const getComments = (comments) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${element.author}</span>
           <span class="film-details__comment-day">${formatCommentDate(element.date)}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button type="button" class="film-details__comment-delete" id="${element.id}">Delete</button>
         </p>
       </div>
      </li>
@@ -62,17 +62,34 @@ const createContentCommentsTemplate = (comments, commentsCount) => `
 export default class ContentCommentsInnerView extends AbstractStatefulView {
   #comments = [];
   #commentsCount = 0;
+  #actualEmotion = null;
 
   constructor(comments, commentsCount) {
     super();
     this.#comments = comments;
     this.#commentsCount = commentsCount;
-    this._setCommentsEmotionClickHandler();
+    this.#setCommentsEmotionClickHandler();
+    this.#disableCommentTextElement();
   }
 
   get template() {
     return createContentCommentsTemplate(this.#comments, this.#commentsCount);
   }
+
+  get comment() {
+    return {
+      'comment' : this.element.querySelector('.film-details__comment-input').value,
+      'emotion' : this.#actualEmotion
+    };
+  }
+
+  #disableCommentTextElement = () => {
+    this.element.querySelector('.film-details__comment-input').setAttribute('disabled', 'disabled');
+  };
+
+  #enableCommentTextElement = () => {
+    this.element.querySelector('.film-details__comment-input').removeAttribute('disabled');
+  };
 
   #setEmotion = (type) => {
     const container = this.element.querySelector('.film-details__add-emoji-label');
@@ -85,8 +102,8 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
   };
 
   #setSelectedEmotion = (source) => {
-    this.updateElement({'selectedEmotion' : source.dataset.name});
-    this.#setEmotion(source.dataset.name);
+    this.#actualEmotion = source.dataset.name;
+    this.#setEmotion(this.#actualEmotion);
     this.#selectRadioButton(source.dataset.name);
   };
 
@@ -94,25 +111,61 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
     this.element.querySelector(`#${type}`).setAttribute('checked', 'checked');
   };
 
-  #setCommentsEmotionClickHandler = (evt) => {
+  #CommentsEmotionClickHandler = (evt) => {
     evt.preventDefault();
     if(evt.target.tagName === EVENT_NAME.img) {
       this.#setSelectedEmotion(evt.target.parentNode);
     } else if ((evt.target.tagName === EVENT_NAME.label)){
       this.#setSelectedEmotion(evt.target);
     }
+    this.#enableCommentTextElement();
   };
 
-  _setCommentsEmotionClickHandler() {
-    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentsEmotionClickHandler);
-  }
+  #setCommentsEmotionClickHandler = () => {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#CommentsEmotionClickHandler);
+  };
 
-  _restoreHandlers = () => {
-    this._setCommentsEmotionClickHandler();
+  #restoreHandlers = () => {
+    this.#setCommentsEmotionClickHandler();
+    this.setDeleteHandler();
+  };
+
+  #deleteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.delete(evt);
+  };
+
+  setDeleteHandler = (callback) => {
+    if(!this._callback.delete){
+      this._callback.delete = callback;
+    }
+
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => {
+      button.addEventListener('click', this.#deleteHandler);
+    });
+  };
+
+  #FormSubmitHandler = (evt) => {
+    this._callback.formSubmit(evt);
+  };
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    document.addEventListener('keydown', this.#FormSubmitHandler);
+  };
+
+  resetCommentForm = () => {
+    const container = this.element.querySelector('.film-details__add-emoji-label');
+
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    this.element.querySelector('.film-details__comment-input').value = '';
+    this.#disableCommentTextElement();
   };
 
   resetComments = (comments) => {
-    //console.log(comments);
     const commentsContainer = this.element.querySelector('.film-details__comments-list');
 
     while(commentsContainer.firstChild) {
@@ -120,5 +173,17 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
     }
 
     commentsContainer.innerHTML = getComments(comments);
+    this.#restoreHandlers();
+    this.#disableCommentTextElement();
+  };
+
+  setDeleting = (button) => {
+    button.innerHTML = 'Deleting...';
+    button.setAttribute('disabled', 'disabled');
+  };
+
+  resetState = (button) => {
+    button.removeAttribute('disabled');
+    button.innerHTML = 'Delete';
   };
 }
