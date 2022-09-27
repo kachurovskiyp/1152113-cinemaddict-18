@@ -102,7 +102,6 @@ export default class ContentDetailsView extends AbstractView {
   };
 
   #EscDownHandler = (evt) => {
-    evt.preventDefault();
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       this._callback.escDown(evt);
     }

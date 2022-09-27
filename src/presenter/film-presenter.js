@@ -8,6 +8,7 @@ import {remove, render} from '../framework/render.js';
 import { RenderPosition } from '../framework/render.js';
 import { FILTER, EVENT_NAME } from '../util.js';
 
+
 export default class FilmPresenter {
   #id = null;
   #film = null;
@@ -34,7 +35,6 @@ export default class FilmPresenter {
 
     this.#id = film.id;
     this.#filmView = new FilmCardView(this.#film);
-    this.#commentsModel = new CommentsModel(this.id);
     this.#contentDetails = new ContentDetailsView(this.#film, this.id);
     this.#ContentCommentsInnerView = new ContentCommentsInnerView(this.#comments, film.comments.length);
   }
@@ -84,6 +84,33 @@ export default class FilmPresenter {
     }
   };
 
+  #onDeleteError = (button) => {
+    this.#ContentCommentsInnerView.shake();
+    this.#ContentCommentsInnerView.resetState(button);
+  };
+
+  #deleteHandler = (evt) => {
+    this.#commentsModel.deleteComment(
+      evt.target,
+      this.#ContentCommentsInnerView.setDeleting,
+      this.#onDeleteError);
+  };
+
+  #onSubmitError = () => {
+    this.#ContentCommentsInnerView.shake();
+  };
+
+  #submitHandler = (evt) => {
+    if(evt.ctrlKey && evt.key === 'Enter') {
+      const comment = this.#ContentCommentsInnerView.comment;
+
+      if(comment.emotion) {
+        this.#commentsModel.addComment(comment, this.#onSubmitError);
+        this.#ContentCommentsInnerView.resetCommentForm();
+      }
+    }
+  };
+
   #popupRender = () => {
     this.#closeAllPopups();
 
@@ -91,6 +118,9 @@ export default class FilmPresenter {
     render(this.#contentDetailsInner, this.#contentDetailsContainer.element);
     render(this.#contentDetails, this.#contentDetailsInner.element);
     render(this.#ContentCommentsInnerView, this.#contentDetailsInner.element);
+
+    this.#ContentCommentsInnerView.setDeleteHandler(this.#deleteHandler);
+    this.#ContentCommentsInnerView.setFormSubmitHandler(this.#submitHandler);
 
     this.#contentDetails.setClickHandler(this.closePopup);
     this.#contentDetails.setEscDownHandler(this.closePopup);
@@ -104,16 +134,20 @@ export default class FilmPresenter {
     this.#commentsModel.init();
   };
 
+  #onButtonClickError = () => {
+    this.#filmView.shake();
+  };
+
   #onWatchListButtonClick = () => {
-    this.#filmsModel.changeData(this.#id, FILTER.watchlist);
+    this.#filmsModel.changeData(this.#id, FILTER.watchlist, this.#onButtonClickError);
   };
 
   #onHistoryButtonClick = () => {
-    this.#filmsModel.changeData(this.#id, FILTER.history);
+    this.#filmsModel.changeData(this.#id, FILTER.history, this.#onButtonClickError);
   };
 
   #onFavoriteButtonClick = () => {
-    this.#filmsModel.changeData(this.#id, FILTER.favorite);
+    this.#filmsModel.changeData(this.#id, FILTER.favorite, this.#onButtonClickError);
   };
 
   #commentsChangeHandler = () => {

@@ -1,13 +1,21 @@
 import Observable from '../framework/observable';
 import { FILTER, UPDATE_TYPE } from '../util';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class FilmsModel extends Observable{
   #filmsApiService = null;
   #films = [];
+  #uiBlocker = null;
 
   constructor(filmsApiService) {
     super();
     this.#filmsApiService = filmsApiService;
+    this.#uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
   }
 
   get films() {
@@ -15,6 +23,7 @@ export default class FilmsModel extends Observable{
   }
 
   init = async () => {
+    this.#uiBlocker.block();
     try{
       const films = await this.#filmsApiService.films;
       this.#films = films.map(this.#adaptToClient);
@@ -23,6 +32,7 @@ export default class FilmsModel extends Observable{
     }
 
     this._notify(UPDATE_TYPE.INIT);
+    this.#uiBlocker.unblock();
   };
 
   #changeElement = (item, type) => {
@@ -41,7 +51,8 @@ export default class FilmsModel extends Observable{
     }
   };
 
-  changeData = async (changedID, type) => {
+  changeData = async (changedID, type, callback) => {
+    this.#uiBlocker.block();
 
     const update = this.#changeElement(this.#films.find((film) => film.id === changedID), type);
 
@@ -57,8 +68,11 @@ export default class FilmsModel extends Observable{
       });
       this._notify(UPDATE_TYPE.PATCH, changedID);
     }catch {
+      callback();
       throw new Error('Can\'t update task');
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #adaptToClient = (film) => {
