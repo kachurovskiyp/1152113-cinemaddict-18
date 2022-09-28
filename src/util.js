@@ -18,6 +18,12 @@ const FILTER_NAME = {
   'favorites' : 'favorites'
 };
 
+const SORT = {
+  'default' : 'default',
+  'byDate' : 'byDate',
+  'byRating' : 'byRating'
+};
+
 const EVENT_NAME = {
   'button' : 'BUTTON',
   'img' : 'IMG',
@@ -109,6 +115,7 @@ export {getRandomInteger,
   getID,
   FILTER,
   FILTER_NAME,
+  SORT,
   EVENT_NAME,
   EMOTIONS,
   UPDATE_TYPE
