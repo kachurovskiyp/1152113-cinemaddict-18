@@ -20,6 +20,7 @@ export default class ContentPresenter {
 
   #filterMenu = null;
   #listEmpty = new ListEmptyView;
+  #sortView = new SortView();
   #contentContainer = new ContentContainerView();
   #contentListContainer = new ContentListContainerView();
   #contentWrapper = new ContentListWrapperView();
@@ -39,12 +40,18 @@ export default class ContentPresenter {
 
     this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
     this.#filterMenu.init();
-    render(new SortView(), this.contentPlace);
+
+    render(this.#sortView, this.contentPlace);
+    this.#sortView.setSortHandler(this.#sortByRating);
 
     this.#renderContentWrapper();
     this.#renderFilms();
     this.#filmsModel.addObserver(this.#modelEventHandle);
   }
+
+  #sortByRating = (evt) => {
+    this.#filmsModel.sortFilms(evt.target.dataset.sortType);
+  };
 
   #modelEventHandle = (updateType, changedID) => {
     let newElement;

@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import { FILTER, UPDATE_TYPE } from '../util';
+import { FILTER, UPDATE_TYPE, SORT } from '../util';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const TimeLimit = {
@@ -11,6 +11,8 @@ export default class FilmsModel extends Observable{
   #filmsApiService = null;
   #films = [];
   #uiBlocker = null;
+  #defaultSort = null;
+  #actualSortType = null;
 
   constructor(filmsApiService) {
     super();
@@ -31,6 +33,9 @@ export default class FilmsModel extends Observable{
       this.#films = [];
     }
 
+    this.#defaultSort = this.#films.slice();
+    this.#actualSortType = SORT.default;
+
     this._notify(UPDATE_TYPE.INIT);
     this.#uiBlocker.unblock();
   };
@@ -48,6 +53,31 @@ export default class FilmsModel extends Observable{
       case FILTER.favorite:
         item.userDetails.favorite = !item.userDetails.favorite;
         return item;
+    }
+  };
+
+  sortFilms = (type) => {
+    if(this.#actualSortType !== type) {
+      this.#actualSortType = type;
+
+      switch(type){
+        case SORT.default:
+          if(this.#defaultSort){
+            this.#films = this.#defaultSort;
+          }
+          this._notify(UPDATE_TYPE.INIT);
+          break;
+
+        case SORT.byDate:
+          this.#films.sort((a, b) => new Date(b.filmInfo.release.date).getTime() - new Date(a.filmInfo.release.date).getTime());
+          this._notify(UPDATE_TYPE.INIT);
+          break;
+
+        case SORT.byRating:
+          this.#films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+          this._notify(UPDATE_TYPE.INIT);
+          break;
+      }
     }
   };
 
@@ -76,73 +106,85 @@ export default class FilmsModel extends Observable{
   };
 
   #adaptToClient = (film) => {
-    const adaptedFilm = {...film,
-      filmInfo: {...film.film_info,
-        ageRating: film.film_info.age_rating,
-        alternativeTitle: film.film_info.alternative_title,
-        totalRating: film.film_info.total_rating,
-        release: {...film.film_info.release,
-          releaseCountry: film.film_info.release.release_country
-        }
+    const {
+      film_info: {
+        age_rating: ageRating,
+        alternative_title: alternativeTitle,
+        total_rating: totalRating,
+
+        release: {
+          release_country: releaseCountry,
+          ...restRelease
+        },
+
+        ...restInfo
       },
 
-      userDetails: {...film.user_details,
-        alreadyWatched: film.user_details.already_watched,
-        watchingDate: film.user_details.watching_date
-      }
+      film_info: filmInfo,
+
+      user_details: {
+        already_watched: alreadyWatched,
+        watching_date: watchingDate,
+        ...restDetails
+      },
+
+      user_details: userDetails,
+      ...restFilm
+    } = film;
+
+    const adaptedFilm = {
+      ...restFilm,
+      filmInfo,
+      userDetails
     };
 
-    delete adaptedFilm.film_info;
-    delete adaptedFilm.filmInfo.age_rating;
-    delete adaptedFilm.filmInfo.alternative_title;
-    delete adaptedFilm.filmInfo.total_rating;
-    delete adaptedFilm.filmInfo.release.release_country;
-    delete adaptedFilm.userDetails.already_watched;
-    delete adaptedFilm.userDetails.watching_date;
-    delete adaptedFilm.user_details;
-
+    adaptedFilm.filmInfo = {...restInfo, ageRating, alternativeTitle, totalRating};
+    adaptedFilm.filmInfo.release = {...restRelease, releaseCountry};
+    adaptedFilm.userDetails = {...restDetails, alreadyWatched, watchingDate};
     adaptedFilm.id = parseInt(adaptedFilm.id, 10);
-    //console.log(adaptedFilm);
 
     return adaptedFilm;
   };
 
   #adaptToServer = (film) => {
-    const adaptedFilm = {...film,
-      /* eslint-disable */
-      film_info: {
-          "title": film.filmInfo.title,
-          "alternative_title": film.filmInfo.alternativeTitle,
-          "total_rating": film.filmInfo.totalRating,
-          "poster": film.filmInfo.poster,
-          "age_rating": film.filmInfo.ageRating,
-          "director": film.filmInfo.director,
-          "writers": film.filmInfo.writers,
-          "actors": film.filmInfo.actors,
-          "release": {
-            "date": film.filmInfo.release.date,
-            "release_country": film.filmInfo.release.releaseCountry
-          },
-          "runtime": film.filmInfo.runtime,
-          "genre": film.filmInfo.genre,
-          "description": film.filmInfo.description
+    /* eslint-disable */
+    const {
+      filmInfo: {
+        ageRating: age_rating,
+        alternativeTitle: alternative_title,
+        totalRating: total_rating,
+
+        release: {
+          releaseCountry: release_country,
+          ...restRelease
         },
 
-      user_details: {...film.userDetails,
-        'already_watched': film.userDetails.alreadyWatched,
-        'watching_date': film.userDetails.watchingDate
-      }
+        ...restInfo
+      },
+
+      filmInfo: film_info,
+
+      userDetails: {
+        alreadyWatched: already_watched,
+        watchingDate: watching_date,
+        ...restDetails
+      },
+
+      userDetails: user_details,
+      ...restFilm
+    } = film;
+
+    const adaptedFilm = {
+      ...restFilm,
+      film_info,
+      user_details
     };
 
-    delete adaptedFilm.filmInfo;
-    delete adaptedFilm.film_info.ageRating;
-    delete adaptedFilm.film_info.alternativeTitle;
-    delete adaptedFilm.film_info.totalRating;
-    delete adaptedFilm.film_info.release.releaseCountry;
-    delete adaptedFilm.user_details.alreadyWatched;
-    delete adaptedFilm.user_details.watchingDate;
-    delete adaptedFilm.userDetails;
+    adaptedFilm.film_info = {...restInfo, age_rating, alternative_title, total_rating};
+    adaptedFilm.film_info.release = {...restRelease, release_country};
+    adaptedFilm.user_details = {...restDetails, already_watched, watching_date};
     adaptedFilm.id = String(adaptedFilm.id);
+
     return adaptedFilm;
   };
 }
