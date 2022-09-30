@@ -30,28 +30,28 @@ const EVENT_NAME = {
   'label' : 'LABEL'
 };
 
-// const EMOTIONS = {
-//   'smile' : {
-//     'name' : 'smile',
-//     'src' : './images/emoji/smile.png',
-//   },
-//   'sleeping' : {
-//     'name' : 'sleeping',
-//     'src' : './images/emoji/sleeping.png',
-//   },
-//   'puke' : {
-//     'name' : 'puke',
-//     'src' : './images/emoji/puke.png',
-//   },
-//   'angry' : {
-//     'name' : 'angry',
-//     'src' : './images/emoji/angry.png',
-//   },
+const EMOTIONS = {
+  'smile' : {
+    'name' : 'smile',
+    'src' : './images/emoji/smile.png',
+  },
+  'sleeping' : {
+    'name' : 'sleeping',
+    'src' : './images/emoji/sleeping.png',
+  },
+  'puke' : {
+    'name' : 'puke',
+    'src' : './images/emoji/puke.png',
+  },
+  'angry' : {
+    'name' : 'angry',
+    'src' : './images/emoji/angry.png',
+  },
 
-//   'width' : '55',
-//   'height' : '55',
-//   'alt' : 'emoji'
-// };
+  'width' : '55',
+  'height' : '55',
+  'alt' : 'emoji'
+};
 
 const UPDATE_TYPE = {
   'PATCH' : 'patch',
@@ -77,29 +77,6 @@ const humanizeFilmReleaseDate = (releaseDate) => dayjs(releaseDate).format('D MM
 const formatCommentDate = (date) => dayjs(date).fromNow(); //dayjs(date).format('YYYY/MM/DD h:mm');
 
 const formatDurationTime = (time) => `${dayjs.duration(time, 'm').format('H')}h ${dayjs.duration(time, 'm').format('mm')}m`;
-
-const EMOTIONS = {
-  'smile' : {
-    'name' : 'smile',
-    'src' : './images/emoji/smile.png',
-  },
-  'sleeping' : {
-    'name' : 'sleeping',
-    'src' : './images/emoji/sleeping.png',
-  },
-  'puke' : {
-    'name' : 'puke',
-    'src' : './images/emoji/puke.png',
-  },
-  'angry' : {
-    'name' : 'angry',
-    'src' : './images/emoji/angry.png',
-  },
-
-  'width' : '55',
-  'height' : '55',
-  'alt' : 'emoji'
-};
 
 const createEmotionElement = (type) => {
   const img = document.createElement('img');
