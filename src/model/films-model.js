@@ -90,12 +90,7 @@ export default class FilmsModel extends Observable{
       const response = await this.#filmsApiService.updateFilm(this.#adaptToServer(update));
       const updatedFilm = this.#adaptToClient(response);
 
-      this.#films = this.#films.map((item) => {
-        if (item.id === changedID) {
-          return updatedFilm;
-        }
-        return item;
-      });
+      this.#films = this.#films.map( (item) => item.id === changedID ? updatedFilm : item);
       this._notify(UPDATE_TYPE.PATCH, changedID);
     }catch {
       callback();
@@ -147,7 +142,7 @@ export default class FilmsModel extends Observable{
   };
 
   #adaptToServer = (film) => {
-    /* eslint-disable */
+    /* eslint camelcase:"off" */
     const {
       filmInfo: {
         ageRating: age_rating,

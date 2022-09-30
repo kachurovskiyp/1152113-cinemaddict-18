@@ -68,23 +68,23 @@ export default class FilmPresenter {
   };
 
   setHandlers() {
-    this.#filmView.setWatchlistClickHandler(this.#onWatchListButtonClick);
-    this.#filmView.setHistoryClickHandler(this.#onHistoryButtonClick);
-    this.#filmView.setFavoriteClickHandler(this.#onFavoriteButtonClick);
-    this.#filmView.setClickHandler(this.#onFilmClick);
+    this.#filmView.setWatchlistClickHandler(this.#watchListButtonClickHandler);
+    this.#filmView.setHistoryClickHandler(this.#historyButtonClickHandler);
+    this.#filmView.setFavoriteClickHandler(this.#favoriteButtonClickHandler);
+    this.#filmView.setClickHandler(this.#filmClickHandler);
   }
 
   destroy = () => {
     remove(this.#filmView);
   };
 
-  #onFilmClick = (evt) => {
+  #filmClickHandler = (evt) => {
     if(evt.target.tagName !== EVENT_NAME.button) {
       this.#popupRender();
     }
   };
 
-  #onDeleteError = (button) => {
+  #deleteErrorHandler = (button) => {
     this.#ContentCommentsInnerView.shake();
     this.#ContentCommentsInnerView.resetState(button);
   };
@@ -93,10 +93,10 @@ export default class FilmPresenter {
     this.#commentsModel.deleteComment(
       evt.target,
       this.#ContentCommentsInnerView.setDeleting,
-      this.#onDeleteError);
+      this.#deleteErrorHandler);
   };
 
-  #onSubmitError = () => {
+  #submitErrorHandler = () => {
     this.#ContentCommentsInnerView.shake();
   };
 
@@ -105,7 +105,7 @@ export default class FilmPresenter {
       const comment = this.#ContentCommentsInnerView.comment;
 
       if(comment.emotion) {
-        this.#commentsModel.addComment(comment, this.#onSubmitError);
+        this.#commentsModel.addComment(comment, this.#submitErrorHandler);
         this.#ContentCommentsInnerView.resetCommentForm();
       }
     }
@@ -124,9 +124,9 @@ export default class FilmPresenter {
 
     this.#contentDetails.setClickHandler(this.closePopup);
     this.#contentDetails.setEscDownHandler(this.closePopup);
-    this.#contentDetails.setWatchlistClickHandler(this.#onWatchListButtonClick);
-    this.#contentDetails.setHistoryClickHandler(this.#onHistoryButtonClick);
-    this.#contentDetails.setFavoriteClickHandler(this.#onFavoriteButtonClick);
+    this.#contentDetails.setWatchlistClickHandler(this.#watchListButtonClickHandler);
+    this.#contentDetails.setHistoryClickHandler(this.#historyButtonClickHandler);
+    this.#contentDetails.setFavoriteClickHandler(this.#favoriteButtonClickHandler);
     this.#popupOpened = true;
 
     this.#commentsModel = new CommentsModel(this.#apiService, this.id);
@@ -134,20 +134,20 @@ export default class FilmPresenter {
     this.#commentsModel.init();
   };
 
-  #onButtonClickError = () => {
+  #buttonClickErrorHandler = () => {
     this.#filmView.shake();
   };
 
-  #onWatchListButtonClick = () => {
-    this.#filmsModel.changeData(this.#id, FILTER.watchlist, this.#onButtonClickError);
+  #watchListButtonClickHandler = () => {
+    this.#filmsModel.changeData(this.#id, FILTER.watchlist, this.#buttonClickErrorHandler);
   };
 
-  #onHistoryButtonClick = () => {
-    this.#filmsModel.changeData(this.#id, FILTER.history, this.#onButtonClickError);
+  #historyButtonClickHandler = () => {
+    this.#filmsModel.changeData(this.#id, FILTER.history, this.#buttonClickErrorHandler);
   };
 
-  #onFavoriteButtonClick = () => {
-    this.#filmsModel.changeData(this.#id, FILTER.favorite, this.#onButtonClickError);
+  #favoriteButtonClickHandler = () => {
+    this.#filmsModel.changeData(this.#id, FILTER.favorite, this.#buttonClickErrorHandler);
   };
 
   #commentsChangeHandler = () => {
