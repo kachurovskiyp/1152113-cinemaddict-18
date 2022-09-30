@@ -30,28 +30,28 @@ const EVENT_NAME = {
   'label' : 'LABEL'
 };
 
-const EMOTIONS = {
-  'smile' : {
-    'name' : 'smile',
-    'src' : './images/emoji/smile.png',
-  },
-  'sleeping' : {
-    'name' : 'sleeping',
-    'src' : './images/emoji/sleeping.png',
-  },
-  'puke' : {
-    'name' : 'puke',
-    'src' : './images/emoji/puke.png',
-  },
-  'angry' : {
-    'name' : 'angry',
-    'src' : './images/emoji/angry.png',
-  },
+// const EMOTIONS = {
+//   'smile' : {
+//     'name' : 'smile',
+//     'src' : './images/emoji/smile.png',
+//   },
+//   'sleeping' : {
+//     'name' : 'sleeping',
+//     'src' : './images/emoji/sleeping.png',
+//   },
+//   'puke' : {
+//     'name' : 'puke',
+//     'src' : './images/emoji/puke.png',
+//   },
+//   'angry' : {
+//     'name' : 'angry',
+//     'src' : './images/emoji/angry.png',
+//   },
 
-  'width' : '55',
-  'height' : '55',
-  'alt' : 'emoji'
-};
+//   'width' : '55',
+//   'height' : '55',
+//   'alt' : 'emoji'
+// };
 
 const UPDATE_TYPE = {
   'PATCH' : 'patch',
@@ -78,31 +78,37 @@ const formatCommentDate = (date) => dayjs(date).fromNow(); //dayjs(date).format(
 
 const formatDurationTime = (time) => `${dayjs.duration(time, 'm').format('H')}h ${dayjs.duration(time, 'm').format('mm')}m`;
 
+const EMOTIONS = {
+  'smile' : {
+    'name' : 'smile',
+    'src' : './images/emoji/smile.png',
+  },
+  'sleeping' : {
+    'name' : 'sleeping',
+    'src' : './images/emoji/sleeping.png',
+  },
+  'puke' : {
+    'name' : 'puke',
+    'src' : './images/emoji/puke.png',
+  },
+  'angry' : {
+    'name' : 'angry',
+    'src' : './images/emoji/angry.png',
+  },
+
+  'width' : '55',
+  'height' : '55',
+  'alt' : 'emoji'
+};
+
 const createEmotionElement = (type) => {
   const img = document.createElement('img');
+  const selectedEmotiopn = EMOTIONS[type];
+
   img.width = EMOTIONS.width;
   img.height = EMOTIONS.height;
-  switch (type) {
-    case EMOTIONS.smile.name:
-      img.alt = `${EMOTIONS.alt}-${EMOTIONS.smile.name}`;
-      img.src = EMOTIONS.smile.src;
-      break;
-
-    case EMOTIONS.sleeping.name:
-      img.alt = `${EMOTIONS.alt}-${EMOTIONS.sleeping.name}`;
-      img.src = EMOTIONS.sleeping.src;
-      break;
-
-    case EMOTIONS.puke.name:
-      img.alt = `${EMOTIONS.alt}-${EMOTIONS.puke.name}`;
-      img.src = EMOTIONS.puke.src;
-      break;
-
-    case EMOTIONS.angry.name:
-      img.alt = `${EMOTIONS.alt}-${EMOTIONS.angry.name}`;
-      img.src = EMOTIONS.angry.src;
-      break;
-  }
+  img.src = selectedEmotiopn.src;
+  img.alt = `${EMOTIONS.alt}-${selectedEmotiopn.name}`;
 
   return img;
 };

@@ -130,7 +130,7 @@ export default class ContentPresenter {
     }
   };
 
-  #onMoreButtomClick = () => {
+  #moreButtonClickHandler = () => {
     this.#filmPresenters
       .slice(this.#FILMS_COUNT_PER_STEP, this.#FILMS_COUNT_PER_STEP + this.#FILMS_COUNT_PER_STEP)
       .forEach((filmPresenter) => filmPresenter.init(this.#contentWrapper.element));
@@ -155,7 +155,7 @@ export default class ContentPresenter {
 
   #renderShowMoreButton () {
     render(this.#showMoreButton, this.#contentListContainer.element);
-    this.#showMoreButton.setClickHandler(this.#onMoreButtomClick);
+    this.#showMoreButton.setClickHandler(this.#moreButtonClickHandler);
   }
 
   #closeAllPopups = () => {

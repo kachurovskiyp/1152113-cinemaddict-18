@@ -28,7 +28,7 @@ export default class FilterPresenter{
   init() {
     this.#menuView = new MenuView(this.#countOfFilteredItems(this.films));
     render(this.#menuView, this.#contentPlace);
-    this.#menuView.setClickHandler(this.#onFilterLinkClick);
+    this.#menuView.setClickHandler(this.#filterLinkClickHandler);
 
     this.#filmsModel.addObserver(this.#modelEventHandle);
   }
@@ -41,10 +41,10 @@ export default class FilterPresenter{
     remove(this.#menuView);
     this.#menuView = new MenuView(this.#countOfFilteredItems(this.films), this.#actualFilter);
     render(this.#menuView, this.#contentPlace, RenderPosition.BEFOREBEGIN);
-    this.#menuView.setClickHandler(this.#onFilterLinkClick);
+    this.#menuView.setClickHandler(this.#filterLinkClickHandler);
   }
 
-  #onFilterLinkClick = (evt) => {
+  #filterLinkClickHandler = (evt) => {
     if(this.#actualFilter !== evt.target.dataset.name) {
       this.#actualFilter = evt.target.dataset.name;
       this.#clearFilmsList();
