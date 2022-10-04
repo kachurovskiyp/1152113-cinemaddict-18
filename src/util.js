@@ -58,21 +58,19 @@ const UPDATE_TYPE = {
   'INIT' : 'init'
 };
 
-const FILM_IDS = [];
-
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
+const USER_RATING = {
+  'noviceCount': 1,
+  'novice': 'Novice',
+  'fanCount': 11,
+  'fan': 'Fan',
+  'movieBuffCount': 21,
+  'movieBuff': 'Movie buff'
 };
-
-const getID = () => {
-  FILM_IDS.push(FILM_IDS.length);
-  return FILM_IDS[FILM_IDS.length - 1];
-};
+const FILM_DESCRIPTION_MAX_LENGHT = 139;
 
 const humanizeFilmReleaseDate = (releaseDate) => dayjs(releaseDate).format('D MMM YYYY');
+
+const humanizeFilmReleaseYear = (releaseDate) => dayjs(releaseDate).format('YYYY');
 
 const formatCommentDate = (date) => dayjs(date).fromNow(); //dayjs(date).format('YYYY/MM/DD h:mm');
 
@@ -90,16 +88,18 @@ const createEmotionElement = (type) => {
   return img;
 };
 
-export {getRandomInteger,
+export {
   humanizeFilmReleaseDate,
+  humanizeFilmReleaseYear,
   formatDurationTime,
   formatCommentDate,
   createEmotionElement,
-  getID,
   FILTER,
   FILTER_NAME,
   SORT,
   EVENT_NAME,
   EMOTIONS,
-  UPDATE_TYPE
+  UPDATE_TYPE,
+  USER_RATING,
+  FILM_DESCRIPTION_MAX_LENGHT
 };

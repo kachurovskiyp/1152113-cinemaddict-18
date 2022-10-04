@@ -6,7 +6,7 @@ const createNewContentListConterinerTemplate = () => `
   </section>
 `;
 
-export default class ContentListContainerView extends AbstractView {
+export default class ContentListView extends AbstractView {
   get template() {
     return createNewContentListConterinerTemplate();
   }

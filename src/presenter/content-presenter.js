@@ -1,12 +1,14 @@
 import {remove, render} from '../framework/render.js';
 import FilterMenuPresenter from './filter-presenter';
+import ProfileView from '../view/profile-view';
 import SortView from '../view/sort-view';
 import ContentContainerView from '../view/content-container-view';
-import ContentListContainerView from '../view/content-list-view';
+import ContentListView from '../view/content-list-view';
 import ContentListWrapperView from '../view/content-list-wrapper-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import ListEmptyView from '../view/list-empty-view';
-import { UPDATE_TYPE } from '../util.js';
+import FooterView from '../view/footer-view.js';
+import { UPDATE_TYPE, SORT } from '../util.js';
 
 import FilmPresenter from './film-presenter.js';
 
@@ -19,10 +21,14 @@ export default class ContentPresenter {
   #apiService = null;
 
   #filterMenu = null;
+  #siteBodyElement = null;
+  #siteHeaderElement = null;
+  #userProfile = new ProfileView();
+  #footer = new FooterView();
   #listEmpty = new ListEmptyView;
   #sortView = new SortView();
   #contentContainer = new ContentContainerView();
-  #contentListContainer = new ContentListContainerView();
+  #contentListContainer = new ContentListView();
   #contentWrapper = new ContentListWrapperView();
   #showMoreButton = new ShowMoreButtonView();
 
@@ -34,23 +40,39 @@ export default class ContentPresenter {
     return this.#filmsModel.films;
   }
 
-  init (contentPlace, filmsModel) {
-    this.contentPlace = contentPlace;
+  init (siteBodyElement, siteHeaderElement, siteMainElement, filmsModel) {
+    this.#siteBodyElement = siteBodyElement;
+    this.#siteHeaderElement = siteHeaderElement;
+    this.siteMainElement = siteMainElement;
     this.#filmsModel = filmsModel;
 
-    this.#filterMenu = new FilterMenuPresenter(this.#filmsModel, this.contentPlace, this.#renderFilms, this.#clearFilmList);
+    render(this.#userProfile, this.#siteHeaderElement);
+
+    this.#filterMenu = new FilterMenuPresenter(
+      this.#filmsModel,
+      this.siteMainElement,
+      this.#renderFilms,
+      this.#clearFilmList,
+      this.#resetSort);
     this.#filterMenu.init();
 
-    render(this.#sortView, this.contentPlace);
-    this.#sortView.setSortHandler(this.#sortByRating);
+    render(this.#sortView, this.siteMainElement);
+    this.#sortView.setSortHandler(this.#sortHandler);
 
     this.#renderContentWrapper();
     this.#renderFilms();
     this.#filmsModel.addObserver(this.#modelEventHandle);
+
+    render(this.#footer, this.#siteBodyElement);
   }
 
-  #sortByRating = (evt) => {
+  #sortHandler = (evt) => {
     this.#filmsModel.sortFilms(evt.target.dataset.sortType);
+  };
+
+  #resetSort = () => {
+    this.#filmsModel.sortFilms(SORT.default);
+    this.#sortView.updateElement({actualSort: SORT.default});
   };
 
   #modelEventHandle = (updateType, changedID) => {
@@ -61,6 +83,8 @@ export default class ContentPresenter {
       case UPDATE_TYPE.INIT:
         this.#clearFilmList();
         this.#renderFilms();
+        this.#footer.setFilmsCount(this.#filmsModel.films.length);
+        this.#userProfile.setProfileRating(this.#filmsModel.films);
         break;
 
       case UPDATE_TYPE.PATCH:
@@ -75,6 +99,7 @@ export default class ContentPresenter {
           new FilmPresenter(
             this.films.find((film) => film.id === changedID),
             this.#filmsModel,
+            this.#filterMenu,
             this.#closeAllPopups,
             this.#contentWrapper.element,
             this.#apiService
@@ -96,6 +121,8 @@ export default class ContentPresenter {
             this.#contentWrapper.element.replaceChild(newElement, child);
           }
         });
+
+        this.#userProfile.setProfileRating(this.#filmsModel.films);
         break;
     }
   };
@@ -114,7 +141,13 @@ export default class ContentPresenter {
 
     films.map((film) => {
       this.#filmPresenters.push(
-        new FilmPresenter(film, this.#filmsModel, this.#closeAllPopups, this.#contentWrapper.element, this.#apiService)
+        new FilmPresenter(
+          film,
+          this.#filmsModel,
+          this.#filterMenu,
+          this.#closeAllPopups,
+          this.#contentWrapper.element,
+          this.#apiService)
       );
     });
 
@@ -144,11 +177,12 @@ export default class ContentPresenter {
   };
 
   #renderListEmpty () {
+    this.#listEmpty.setActualFilter(this.#filterMenu.actualFilter);
     render(this.#listEmpty, this.#contentWrapper.element);
   }
 
   #renderContentWrapper() {
-    render(this.#contentContainer, this.contentPlace);
+    render(this.#contentContainer, this.siteMainElement);
     render(this.#contentListContainer, this.#contentContainer.element);
     render(this.#contentWrapper, this.#contentListContainer.element);
   }

@@ -59,10 +59,11 @@ const createContentCommentsTemplate = (comments, commentsCount) => `
 </div>
 `;
 
-export default class ContentCommentsInnerView extends AbstractStatefulView {
+export default class ContentCommentsView extends AbstractStatefulView {
   #comments = [];
   #commentsCount = 0;
   #actualEmotion = null;
+  #commentForm = this.element.querySelector('.film-details__new-comment');
 
   constructor(comments, commentsCount) {
     super();
@@ -104,14 +105,14 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
   #setSelectedEmotion = (source) => {
     this.#actualEmotion = source.dataset.name;
     this.#setEmotion(this.#actualEmotion);
-    this.#selectRadioButton(source.dataset.name);
+    this.#radioButtonSelect(source.dataset.name);
   };
 
-  #selectRadioButton = (type) => {
+  #radioButtonSelect = (type) => {
     this.element.querySelector(`#${type}`).setAttribute('checked', 'checked');
   };
 
-  #CommentsEmotionClickHandler = (evt) => {
+  #commentsEmotionClickHandler = (evt) => {
     evt.preventDefault();
     if(evt.target.tagName === EVENT_NAME.img) {
       this.#setSelectedEmotion(evt.target.parentNode);
@@ -122,7 +123,11 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
   };
 
   #setCommentsEmotionClickHandler = () => {
-    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#CommentsEmotionClickHandler);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#commentsEmotionClickHandler);
+  };
+
+  #unsetCommentsEmotionClickHandler = () => {
+    this.element.querySelector('.film-details__emoji-list').removeEventListener('click', this.#commentsEmotionClickHandler);
   };
 
   #restoreHandlers = () => {
@@ -145,14 +150,26 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
     });
   };
 
-  #FormSubmitHandler = (evt) => {
+  #formSubmitHandler = (evt) => {
     this._callback.formSubmit(evt);
   };
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
-    document.addEventListener('keydown', this.#FormSubmitHandler);
+    document.addEventListener('keydown', this.#formSubmitHandler);
   };
+
+  removeEventHandlers = () => {
+    document.removeEventListener('keydown', this.#formSubmitHandler);
+  };
+
+  disableForm() {
+    this.#unsetCommentsEmotionClickHandler();
+    this.#disableCommentTextElement();
+    this.#commentForm.querySelectorAll('input').forEach((input) => {
+      input.setAttribute('disabled', 'disabled');
+    });
+  }
 
   resetCommentForm = () => {
     const container = this.element.querySelector('.film-details__add-emoji-label');
@@ -163,6 +180,10 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
 
     this.element.querySelector('.film-details__comment-input').value = '';
     this.#disableCommentTextElement();
+    this.#setCommentsEmotionClickHandler();
+    this.#commentForm.querySelectorAll('input').forEach((input) => {
+      input.removeAttribute('disabled');
+    });
   };
 
   resetComments = (comments) => {
@@ -185,5 +206,9 @@ export default class ContentCommentsInnerView extends AbstractStatefulView {
   resetState = (button) => {
     button.removeAttribute('disabled');
     button.innerHTML = 'Delete';
+  };
+
+  resetCommentsCount = (commentsCount) => {
+    this.element.querySelector('.film-details__comments-count').innerHTML = commentsCount;
   };
 }

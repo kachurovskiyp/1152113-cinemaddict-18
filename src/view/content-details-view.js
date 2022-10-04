@@ -101,7 +101,7 @@ export default class ContentDetailsView extends AbstractView {
     this._callback.click(evt);
   };
 
-  #EscDownHandler = (evt) => {
+  #escDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       this._callback.escDown(evt);
     }
@@ -112,38 +112,54 @@ export default class ContentDetailsView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
   };
 
-  setEscDownHandler = (callback) => {
-    this._callback.escDown = callback;
-    document.addEventListener('keydown', this.#EscDownHandler);
+  removeEventHandlers = () => {
+    document.removeEventListener('keydown', this.#escDownHandler);
   };
 
-  #clickWatchlistHandler = (evt) => {
+  setEscDownHandler = (callback) => {
+    this._callback.escDown = callback;
+    document.addEventListener('keydown', this.#escDownHandler);
+  };
+
+  #watchlistClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.clickWatchlist(evt);
   };
 
-  #clickHistoryHandler = (evt) => {
+  #historyClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.clickHistory(evt);
   };
 
-  #clickFavoriteHandler = (evt) => {
+  #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.clickFavorite(evt);
   };
 
   setWatchlistClickHandler = (callback) => {
     this._callback.clickWatchlist = callback;
-    this.element.querySelector(`[data-name="${FILTER.watchlist}"]`).addEventListener('click', this.#clickWatchlistHandler);
+    this.element.querySelector(`[data-name="${FILTER.watchlist}"]`).addEventListener('click', this.#watchlistClickHandler);
   };
 
   setHistoryClickHandler = (callback) => {
     this._callback.clickHistory = callback;
-    this.element.querySelector(`[data-name="${FILTER.history}"]`).addEventListener('click', this.#clickHistoryHandler);
+    this.element.querySelector(`[data-name="${FILTER.history}"]`).addEventListener('click', this.#historyClickHandler);
   };
 
   setFavoriteClickHandler = (callback) => {
     this._callback.clickFavorite = callback;
-    this.element.querySelector(`[data-name="${FILTER.favorite}"]`).addEventListener('click', this.#clickFavoriteHandler);
+    this.element.querySelector(`[data-name="${FILTER.favorite}"]`).addEventListener('click', this.#favoriteClickHandler);
+  };
+
+  setPopupBodyClass = () => {
+    document.querySelector('body').classList.add('hide-overflow');
+  };
+
+  unsetPopupBodyClass = () => {
+    document.querySelector('body').classList.remove('hide-overflow');
+  };
+
+  setScrollEvent = () => {
+    // console.log(this.element.offsetHeight);
   };
 }

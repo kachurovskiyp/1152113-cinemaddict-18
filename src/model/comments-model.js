@@ -1,5 +1,6 @@
 import Observable from '../framework/observable';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import { UPDATE_TYPE } from '../util';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -23,10 +24,14 @@ export default class CommentsModel extends Observable {
     return this.#comments;
   }
 
+  get commentsCount() {
+    return this.#comments.length;
+  }
+
   init = async () => {
     try{
       this.#comments = await this.#apiService.getComments(this.#id);
-      this._notify();
+      this._notify(UPDATE_TYPE.INIT);
 
     } catch {
       this.#comments = [];
@@ -41,11 +46,10 @@ export default class CommentsModel extends Observable {
       const responce = await this.#apiService.addComment(comment, this.#id);
       this.#comments = responce.comments;
 
-      this._notify();
+      this._notify(UPDATE_TYPE.PATCH);
     } catch {
       this.#uiBlocker.unblock();
       errorCallback();
-      throw new Error('Can\'t add comment');
     }
 
     this.#uiBlocker.unblock();
@@ -58,10 +62,9 @@ export default class CommentsModel extends Observable {
       await this.#apiService.deleteComment(commentButton.id);
     } catch {
       errorCallback(commentButton);
-      throw new Error('Can\'t load comments');
     }
     this.#comments = this.#comments.filter((comment) => comment.id !== commentButton.id);
 
-    this._notify();
+    this._notify(UPDATE_TYPE.PATCH);
   };
 }

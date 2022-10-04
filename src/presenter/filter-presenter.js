@@ -8,13 +8,15 @@ export default class FilterPresenter{
   #contentPlace = null;
   #renderFilms = null;
   #clearFilmsList = null;
+  #resetSort = null;
   #actualFilter = FILTER_NAME.all;
 
-  constructor(filmsModel, contentPlace, renderFilms, clearFilmsList) {
+  constructor(filmsModel, contentPlace, renderFilms, clearFilmsList, resetSort) {
     this.#filmsModel = filmsModel;
     this.#contentPlace = contentPlace;
     this.#renderFilms = renderFilms;
     this.#clearFilmsList = clearFilmsList;
+    this.#resetSort = resetSort;
   }
 
   get films() {
@@ -45,8 +47,11 @@ export default class FilterPresenter{
   }
 
   #filterLinkClickHandler = (evt) => {
-    if(this.#actualFilter !== evt.target.dataset.name) {
-      this.#actualFilter = evt.target.dataset.name;
+    const filterName = evt.target.nodeName === 'SPAN' ? evt.target.parentNode.dataset.name : evt.target.dataset.name;
+
+    if(this.#actualFilter !== filterName) {
+      this.#actualFilter = filterName;
+      this.#resetSort();
       this.#clearFilmsList();
       this.#renderFilms();
     }

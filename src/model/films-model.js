@@ -94,7 +94,7 @@ export default class FilmsModel extends Observable{
       this._notify(UPDATE_TYPE.PATCH, changedID);
     }catch {
       callback();
-      throw new Error('Can\'t update task');
+      this.#uiBlocker.unblock();
     }
 
     this.#uiBlocker.unblock();
