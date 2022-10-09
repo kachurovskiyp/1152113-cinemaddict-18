@@ -56,10 +56,6 @@ export default class ContentPresenter {
       this.#resetSort);
     this.#filterMenu.init();
 
-    render(this.#sortView, this.siteMainElement);
-    this.#sortView.setSortHandler(this.#sortHandler);
-
-    this.#renderContentWrapper();
     this.#renderFilms();
     this.#filmsModel.addObserver(this.#modelEventHandle);
 
@@ -78,6 +74,7 @@ export default class ContentPresenter {
   #modelEventHandle = (updateType, changedID) => {
     let newElement;
     const popupOpen = this.#filmPresenters.find((presenter) => presenter.popupOpened);
+    let popupScrollPosition = 0.0;
 
     switch(updateType){
       case UPDATE_TYPE.INIT:
@@ -90,6 +87,7 @@ export default class ContentPresenter {
       case UPDATE_TYPE.PATCH:
 
         if(popupOpen){
+          popupScrollPosition = popupOpen.popupScrollPosition;
           this.#closeAllPopups();
         }
 
@@ -102,7 +100,8 @@ export default class ContentPresenter {
             this.#filterMenu,
             this.#closeAllPopups,
             this.#contentWrapper.element,
-            this.#apiService
+            this.#apiService,
+            this.#rerenderFilms,
           )
         );
 
@@ -111,7 +110,7 @@ export default class ContentPresenter {
             presenter.setHandlers();
             newElement = presenter.viewComponent.element;
             if(popupOpen) {
-              presenter.resetPopup();
+              presenter.resetPopup(popupScrollPosition);
             }
           }
         });
@@ -125,12 +124,16 @@ export default class ContentPresenter {
         this.#userProfile.setProfileRating(this.#filmsModel.films);
         break;
     }
+
   };
 
   #clearFilmList = () => {
     this.#filmPresenters.forEach((filmPresenter) => filmPresenter.destroy());
     this.#FILMS_COUNT_PER_STEP = this.#FILMS_STEP;
     this.#filmPresenters = [];
+
+    remove(this.#sortView);
+    this.#clearContentWrapper();
     remove(this.#showMoreButton);
     remove(this.#listEmpty);
   };
@@ -147,13 +150,22 @@ export default class ContentPresenter {
           this.#filterMenu,
           this.#closeAllPopups,
           this.#contentWrapper.element,
-          this.#apiService)
+          this.#apiService,
+          this.#rerenderFilms
+        )
       );
     });
 
     if(this.#filmPresenters.length < 1) {
+      this.#renderContentWrapper();
       this.#renderListEmpty();
+
     } else {
+      render(this.#sortView, this.siteMainElement);
+      this.#sortView.setSortHandler(this.#sortHandler);
+
+      this.#renderContentWrapper();
+
       this.#filmPresenters.slice(0, this.#FILMS_COUNT_PER_STEP).
         forEach((filmPresenter) => filmPresenter.init(this.#contentWrapper.element));
 
@@ -161,6 +173,11 @@ export default class ContentPresenter {
         this.#renderShowMoreButton();
       }
     }
+  };
+
+  #rerenderFilms = () => {
+    this.#clearFilmList();
+    this.#renderFilms();
   };
 
   #moreButtonClickHandler = () => {
@@ -185,6 +202,12 @@ export default class ContentPresenter {
     render(this.#contentContainer, this.siteMainElement);
     render(this.#contentListContainer, this.#contentContainer.element);
     render(this.#contentWrapper, this.#contentListContainer.element);
+  }
+
+  #clearContentWrapper() {
+    remove(this.#contentWrapper);
+    remove(this.#contentListContainer);
+    remove(this.#contentContainer);
   }
 
   #renderShowMoreButton () {

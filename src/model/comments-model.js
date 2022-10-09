@@ -12,12 +12,14 @@ export default class CommentsModel extends Observable {
   #id = null;
   #apiService = null;
   #uiBlocker = null;
+  #contentCommentsView = null;
 
-  constructor(apiService, id) {
+  constructor(apiService, id, contentCommentsView) {
     super();
     this.#apiService = apiService;
     this.#id = id;
     this.#uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
+    this.#contentCommentsView = contentCommentsView;
   }
 
   get comments() {
@@ -43,13 +45,16 @@ export default class CommentsModel extends Observable {
     this.#uiBlocker.block();
 
     try{
+      this.#contentCommentsView.disableForm();
       const responce = await this.#apiService.addComment(comment, this.#id);
       this.#comments = responce.comments;
 
       this._notify(UPDATE_TYPE.PATCH);
+      this.#contentCommentsView.resetCommentForm();
     } catch {
       this.#uiBlocker.unblock();
       errorCallback();
+      this.#contentCommentsView.resetCommentForm();
     }
 
     this.#uiBlocker.unblock();

@@ -158,8 +158,4 @@ export default class ContentDetailsView extends AbstractView {
   unsetPopupBodyClass = () => {
     document.querySelector('body').classList.remove('hide-overflow');
   };
-
-  setScrollEvent = () => {
-    // console.log(this.element.offsetHeight);
-  };
 }

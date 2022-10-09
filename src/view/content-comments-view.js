@@ -167,7 +167,7 @@ export default class ContentCommentsView extends AbstractStatefulView {
     this.#unsetCommentsEmotionClickHandler();
     this.#disableCommentTextElement();
     this.#commentForm.querySelectorAll('input').forEach((input) => {
-      input.setAttribute('disabled', 'disabled');
+      input.setAttribute('disabled','disabled');
     });
   }
 
