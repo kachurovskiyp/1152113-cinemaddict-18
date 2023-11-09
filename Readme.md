@@ -13,7 +13,7 @@ This project implemented MVP pattern with Vanilla JS for full understanding the 
 ```
 git clone [SSH]
 ```
-Next in project folder
+Next
 
 ```
 npm install
